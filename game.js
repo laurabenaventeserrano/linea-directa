@@ -22,7 +22,7 @@ const bgOf = p => { const i=PEOPLE.indexOf(p); return PASTEL[(i+Math.floor(i/4)*
 const STAGE={w:1440,h:960};
 let S=1;
 function fit(){
-  const on=innerWidth>=1024&&innerHeight>=620;
+  const on=innerWidth>=900&&innerHeight>=560;
   document.documentElement.classList.toggle('staged',on);
   S=on?Math.min(innerWidth/STAGE.w,innerHeight/STAGE.h):1;
   document.documentElement.style.setProperty('--s',S);
@@ -630,7 +630,7 @@ addEventListener('keydown',e=>{
   const ph=tp.querySelector('.phone');
   let held=false,sx=0,sy=0;
   tp.addEventListener('pointerdown',e=>{ held=true; tp.classList.add('held'); try{tp.setPointerCapture(e.pointerId)}catch(_){} sx=e.clientX; sy=e.clientY; Sound.unlock(); Sound.pick(); });
-  tp.addEventListener('pointermove',e=>{ if(!held) return; const x=e.clientX-sx, y=e.clientY-sy; ph.style.transform=`translate(${x}px,${y}px) rotate(${x*.08}deg)`; });
+  tp.addEventListener('pointermove',e=>{ if(!held) return; const x=(e.clientX-sx)/S, y=(e.clientY-sy)/S; ph.style.transform=`translate(${x}px,${y}px) rotate(${x*.08}deg)`; });
   const release=()=>{ if(!held) return; held=false; tp.classList.remove('held'); ph.style.transform=''; start(); };
   tp.addEventListener('pointerup',release); tp.addEventListener('pointercancel',()=>{ held=false; tp.classList.remove('held'); ph.style.transform=''; });
 }

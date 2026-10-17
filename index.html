@@ -251,7 +251,7 @@
   .heartbtn.glow svg{animation:pulse .7s ease-in-out infinite}
   @keyframes pulse{50%{transform:scale(1.1)}}
   .heartbtn[disabled]{opacity:.45;cursor:var(--cur-arrow)}
-  .actions{display:grid;grid-template-columns:1fr;gap:10px}
+  .actions{display:grid;grid-template-columns:1fr auto auto;gap:10px}
   .actions .btn{min-width:44px;white-space:nowrap}
 
   /* Pistas (como la lista del reproductor) */
@@ -434,6 +434,10 @@
     transform:translate(-50%,-50%) scale(var(--s));
   }
   .staged .hud{margin:0}
+  .staged #title{
+    position:fixed;left:50%;top:50%;width:1440px;height:960px;min-height:0;padding:16px;
+    transform:translate(-50%,-50%) scale(var(--s));
+  }
   .staged .layout{flex:1;min-height:0;grid-template-columns:340px 1fr;grid-template-rows:100%}
   .staged .col{min-height:0}
   .staged .col > .win.sky{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -514,8 +518,6 @@
     <span class="cell">CLUES <b id="hClues">0</b></span>
     <span class="cell">CALLS <b id="hCalls">0</b></span>
     <span class="tools">
-      <button class="btn" id="bMute" aria-label="Sound on" aria-pressed="false">♪ ON</button>
-      <button class="btn" id="bHelp" aria-label="How to play">?</button>
       <button class="btn y" id="bRestart">NEW GAME</button>
     </span>
   </header>
@@ -534,6 +536,8 @@
             </div>
             <div class="actions">
               <button class="btn y" id="bHot"></button>
+              <button class="btn sq" id="bMute" aria-label="Sound on" aria-pressed="false">♪ ON</button>
+              <button class="btn sq" id="bHelp" aria-label="How to play">?</button>
             </div>
           </div>
         </div>

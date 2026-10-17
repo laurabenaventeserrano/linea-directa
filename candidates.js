@@ -15,9 +15,9 @@
 window.LD_DATA = {
 
   traits: {
-    texts: { label:'TEXTS', values:{ double:'double-texts', read:'leaves on read' } },
-    plans: { label:'PLANS', values:{ big:'big plans', vague:'“let’s see”' } },
-    exes:  { label:'EXES',  values:{ crazy:'all “crazy”', close:'still close' } }
+    texts: { label:'TEXTS', values:{ double:'double-texts', read:'leaves on read', late:'only at 2 a.m.' } },
+    plans: { label:'PLANS', values:{ big:'big plans', vague:'“let’s see”', cancel:'cancels last minute' } },
+    exes:  { label:'EXES',  values:{ crazy:'all “crazy”', close:'still close', secret:'won’t talk about it' } }
   },
 
   // What a caller says about the red flag. Several per value so jokes don't repeat.
@@ -32,6 +32,11 @@ window.LD_DATA = {
         'They watch every story you post but take three business days to reply.',
         'Your last message to them says “Read”. It has said “Read” since March.',
         'They reply “haha” to everything. Eventually.'
+      ],
+      late: [
+        'Silent all day. Then, at 2:07 a.m.: “u up?”',
+        'Their messages only arrive after midnight. Like a vampire with wifi.',
+        'They text you at 3 a.m. and act surprised you were asleep.'
       ]
     },
     plans: {
@@ -44,6 +49,11 @@ window.LD_DATA = {
         'Ask them what you are and you get “let’s see where it goes”.',
         'They won’t commit to dinner on Thursday. It’s Wednesday.',
         'Their idea of a plan is “we’ll see”. They never see.'
+      ],
+      cancel: [
+        'They cancel an hour before. Every time. With a different dead grandma.',
+        'You’ve been stood up at the same café three times. The waiter knows your name.',
+        'They say “raincheck” more than they say your name.'
       ]
     },
     exes: {
@@ -56,6 +66,11 @@ window.LD_DATA = {
         'They’re “still really close” with their ex. They had brunch on Sunday.',
         'Their ex likes every photo within a minute. Apparently it’s nothing.',
         'They keep every ex in their contacts. Just in case.'
+      ],
+      secret: [
+        'Ask about their last relationship and they change the subject. To the weather.',
+        'Their past is “complicated”. That’s all you’ll ever get.',
+        'They have no exes, apparently. They were born at 28.'
       ]
     }
   },
@@ -86,10 +101,10 @@ window.LD_DATA = {
   candidates: [
     {
       id:'jordan', name:'Jordan', age:31, phone:'555-0101', bg:'#CFE6D4', pitch:.85,
-      traits:{ texts:'read', plans:'big', exes:'crazy' },
-      hello:'…oh. Hi. Sorry, I’m not really on my phone that much.',
+      traits:{ texts:'read', plans:'cancel', exes:'secret' },
+      hello:'…oh. Hey. I just saw your message. From Tuesday.',
       reveal:{
-        archetype:'The Ghoster', flag:'Ghosting',
+        archetype:'The Ghoster', flag:'Vanishes mid-conversation',
         quote:'I’m not really on my phone that much.',
         stats:[['Last seen','2 months ago'],['Status','online (apparently)'],['Reply rate','0%']],
         why:'Disappears exactly when you start thinking this might actually go somewhere.',
@@ -129,7 +144,7 @@ window.LD_DATA = {
       traits:{ texts:'double', plans:'big', exes:'crazy' },
       hello:'Hey you. I literally just thought about you. Isn’t that crazy?',
       reveal:{
-        archetype:'The Love Bomber', flag:'Love bombing',
+        archetype:'The Love Bomber', flag:'Too much, too fast',
         quote:'I’ve never felt this way before.',
         stats:[['“I love you” after','4 days'],['Bouquets before date two','3'],['Playlists made for you','2']],
         why:'Hands you the whole relationship in two weeks, then asks why you’re being so distant.',
@@ -170,7 +185,7 @@ window.LD_DATA = {
     },
     {
       id:'sam', name:'Sam', age:28, phone:'555-0103', bg:'#EFE3CF', pitch:1.05,
-      traits:{ texts:'read', plans:'vague', exes:'crazy' },
+      traits:{ texts:'late', plans:'vague', exes:'secret' },
       hello:'Heyyy. What are we? Kidding. Don’t answer that.',
       reveal:{
         archetype:'The Situationship', flag:'No labels, ever',
@@ -209,10 +224,10 @@ window.LD_DATA = {
     },
     {
       id:'casey', name:'Casey', age:30, phone:'555-0104', bg:'#CFE6D4', pitch:1.2,
-      traits:{ texts:'read', plans:'vague', exes:'close' },
+      traits:{ texts:'late', plans:'cancel', exes:'close' },
       hello:'Omg hiii. I saw your story. Anyway, gotta go!',
       reveal:{
-        archetype:'The Breadcrumber', flag:'Breadcrumbing',
+        archetype:'The Breadcrumber', flag:'Just enough attention',
         quote:'We should totally hang out soon!!',
         stats:[['Messages per month','1 (at 1 a.m.)'],['Stories watched','all of them'],['Plans made','0']],
         why:'Drops a like every three weeks. Just enough to keep you hungry.',
@@ -292,7 +307,7 @@ window.LD_DATA = {
     },
     {
       id:'robin', name:'Robin', age:33, phone:'555-0106', bg:'#EFE3CF', pitch:.9,
-      traits:{ texts:'read', plans:'big', exes:'close' },
+      traits:{ texts:'read', plans:'big', exes:'secret' },
       hello:'Hi. Is this going to be a conversation? Okay.',
       reveal:{
         archetype:'The Emotionally Unavailable', flag:'Feelings: out of office',
@@ -331,8 +346,8 @@ window.LD_DATA = {
     },
     {
       id:'taylor', name:'Taylor', age:27, phone:'555-0107', bg:'#F4CFC8', pitch:1.25,
-      traits:{ texts:'double', plans:'vague', exes:'close' },
-      hello:'Hey! Sorry, hold on, other line. Okay. Hi!',
+      traits:{ texts:'read', plans:'vague', exes:'close' },
+      hello:'Hey! Hold on, other line… Okay. Hi! Who’s this again?',
       reveal:{
         archetype:'The Option Collector', flag:'Everyone on hold',
         quote:'I’m just seeing where things go. With everyone.',
@@ -376,9 +391,9 @@ window.LD_DATA = {
     {
       id:'morgan', name:'Morgan', age:35, phone:'555-0108', bg:'#CFE6D4', pitch:1.1,
       traits:{ texts:'double', plans:'big', exes:'close' },
-      hello:'Hi! I was just looking at flights for us. Kidding. Unless?',
+      hello:'Hi! Quick question: aisle or window? For Lisbon. In spring.',
       reveal:{
-        archetype:'The Future Faker', flag:'Fake future plans',
+        archetype:'The Future Faker', flag:'Plans that never happen',
         quote:'We should go to Lisbon in spring. Just us.',
         stats:[['Trips planned','4'],['Trips taken','0'],['Future dog’s name','Biscuit']],
         why:'Sells you a whole future together. The future never actually shows up.',
@@ -418,8 +433,8 @@ window.LD_DATA = {
     },
     {
       id:'vicky', name:'Vicky', age:29, phone:'555-0109', bg:'#F4CFC8', pitch:1.15,
-      traits:{ texts:'double', plans:'big', exes:'crazy' },
-      hello:'Who was that on the other line? Kidding. Who was it, though?',
+      traits:{ texts:'double', plans:'cancel', exes:'crazy' },
+      hello:'Who was that on the other line? I heard the beep. I always hear the beep.',
       reveal:{
         archetype:'The Detective', flag:'Checks your phone',
         quote:'I’m not jealous. I just want to know who Sara is.',
@@ -461,7 +476,7 @@ window.LD_DATA = {
     },
     {
       id:'mia', name:'Mia', age:26, phone:'555-0110', bg:'#CFE6D4', pitch:1.3,
-      traits:{ texts:'read', plans:'vague', exes:'close' },
+      traits:{ texts:'late', plans:'big', exes:'close' },
       hello:'Hiii! Wait, say that again, I’m recording.',
       reveal:{
         archetype:'The Content Creator', flag:'You’re content',
@@ -504,7 +519,7 @@ window.LD_DATA = {
     },
     {
       id:'nina', name:'Nina', age:32, phone:'555-0111', bg:'#EFE3CF', pitch:1.0,
-      traits:{ texts:'read', plans:'big', exes:'close' },
+      traits:{ texts:'late', plans:'vague', exes:'close' },
       hello:'Oh. Hi. Sorry, I thought you were someone else.',
       reveal:{
         archetype:'The Unfinished Business', flag:'Not over her ex',
