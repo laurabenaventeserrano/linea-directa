@@ -478,7 +478,7 @@ function blockPerson(id){
   if(id===R.target){
     G.blocked.push(id);
     say(p.name.toUpperCase(),pick(DATA.caught));
-    crtState('RED FLAG BLOCKED',true); P.screen('BLOCKED');
+    crtState('ADMIRER BLOCKED',true); P.screen('BLOCKED');
     Sound.stamp(); Sound.win(); updateBoard();
     const el=document.querySelector(`#board .cand[data-id="${id}"]`);
     el.classList.add('just'); setTimeout(()=>el.classList.remove('just'),500);
@@ -488,7 +488,7 @@ function blockPerson(id){
   // bloquear al que no es: se acaba la partida
   G.over=true; R.nope.add(id);
   Sound.stamp(); Sound.no();
-  say('GAME OVER',`${p.name} wasn’t the one. You blocked the wrong person.`,{red:true});
+  say('GAME OVER',`${p.name} didn’t even like you. You blocked the wrong person.`,{red:true});
   crtState('GAME OVER',true); P.screen('GAME OVER');
   updateBoard();
   later(()=>showLost(p,byId(R.target)),1600);
@@ -496,7 +496,7 @@ function blockPerson(id){
 function startRinging(){
   L.mode='incoming'; P.ring(true); P.led('blink'); P.screen('RING!');
   crtState('INCOMING CALL',true); setButtons();
-  say('INCOMING CALL','The hotline has a new case. Pick up.');
+  say('INCOMING CALL','Someone else in the lineup likes you. Pick up.');
   const ringOnce=()=>{ if(L.mode!=='incoming') return; Sound.ring(); later(ringOnce,1300); };
   ringOnce();
 }
@@ -536,10 +536,10 @@ addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('modal').hidden){ e.prev
 function showReveal(p){
   const r=p.reveal, last=G.blocked.length===PEOPLE.length;
   Sound.fanfare();
-  modal('♥ RED FLAG DETECTED',`
+  modal('♥ ADMIRER BLOCKED',`
     <div class="cand rv-card" style="--bg:${bgOf(p)}">
       ${cardTop(p)}
-      <div class="frame"><i class="strip"></i><span class="pic">${portrait(p)}</span><i class="strip"></i><span class="stamp">IDENTIFIED</span></div>
+      <div class="frame"><i class="strip"></i><span class="pic">${portrait(p)}</span><i class="strip"></i><span class="stamp">BLOCKED</span></div>
       <span class="tel"><span>${esc(p.phone)}</span></span>
     </div>
     <h2 id="mTitle">${esc(r.archetype)}</h2>
@@ -555,11 +555,11 @@ function showComplete(){
   const score=G.clues+G.calls;
   const end=DATA.ending.find(x=>score<=x.max)||DATA.ending[DATA.ending.length-1];
   Sound.fanfare();
-  modal('♥ ALL RED FLAGS IDENTIFIED',`
+  modal('♥ EVERY ADMIRER BLOCKED',`
     <h2 id="mTitle">${esc(end.title)}</h2>
     <p>${esc(end.line)}</p>
     <div class="roll" aria-hidden="true">${PEOPLE.map(p=>`<span style="--bg:${bgOf(p)}">${portrait(p)}</span>`).join('')}</div>
-    <div class="score"><span>${PEOPLE.length}/${PEOPLE.length} IDENTIFIED</span><span>${G.clues} ${G.clues===1?'CLUE':'CLUES'}</span><span>${G.calls} ${G.calls===1?'CALL':'CALLS'}</span></div>
+    <div class="score"><span>${PEOPLE.length}/${PEOPLE.length} BLOCKED</span><span>${G.clues} ${G.clues===1?'CLUE':'CLUES'}</span><span>${G.calls} ${G.calls===1?'CALL':'CALLS'}</span></div>
     <button class="btn btn-big" data-go>▶ PLAY AGAIN</button>`,
     ()=>{ newSession(); beginCase(false); });
 }
@@ -571,20 +571,20 @@ function showLost(p,t){
       <span class="tel"><span>${esc(t.phone)}</span></span>
     </div>
     <h2 id="mTitle">Wrong one blocked</h2>
-    <p>${esc(p.name)} wasn’t the red flag. It was ${esc(t.name)}: ${esc(t.reveal.archetype)}.</p>
+    <p>${esc(p.name)} didn’t even like you. It was ${esc(t.name)}: ${esc(t.reveal.archetype)}.</p>
     <div class="score"><span>${G.blocked.length}/${PEOPLE.length} BLOCKED</span><span>${G.clues} ${G.clues===1?'CLUE':'CLUES'}</span><span>${G.calls} ${G.calls===1?'CALL':'CALLS'}</span></div>
     <button class="btn btn-big" data-go>▶ PLAY AGAIN</button>`,
     ()=>{ newSession(); beginCase(false); });
 }
 function showHelp(){
   modal('✦ HOW IT WORKS',`
-    <h2 id="mTitle">Find the red flag</h2>
+    <h2 id="mTitle">Guess who likes you. Then block them.</h2>
     <ol>
-      <li>The hotline calls with a clue about one person in the lineup. Pick up.</li>
+      <li>Someone in the lineup likes you. The hotline calls with a clue about who. Pick up.</li>
       <li>Need more? Call the hotline again (${esc(HOT.label)}, or just press CALL).</li>
-      <li>Every card shows how they text, plan and talk about their exes. Cross out whoever doesn’t fit.</li>
+      <li>Every card shows how they text, how they make plans and what they talk about. Cross out whoever doesn’t fit.</li>
       <li>Call anyone in the lineup to hear them out. Tap their number.</li>
-      <li>Think you know? BLOCK them. Get it right and they’re gone for good. Block the wrong one and it’s game over.</li>
+      <li>Know who likes you? BLOCK them. Get it right and they’re gone for good. Block someone who doesn’t like you and it’s game over.</li>
       <li>To hang up, press HANG UP or put the phone back on its base.</li>
       <li>Keys: 0–9 dial · Enter call · ← delete · Esc hang up.</li>
     </ol>

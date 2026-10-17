@@ -256,7 +256,7 @@ Small, toy-like and quick, never on body text. Allowed: wiggle on the title phon
 
 ## Copy voice
 
-The UI is in English, short, deadpan and a bit mean-funny: dating red flags told like a 90s phone line. UI labels are UPPERCASE verbs. Dialogue is sentence case, in quotes, on a screen. The game is always called **Línea Directa**.
+The goal is always the same and always visible: **someone likes you; guess who and block them.** The UI is in English, short, deadpan and a bit mean-funny: dating red flags told like a 90s phone line. UI labels are UPPERCASE verbs. Dialogue is sentence case, in quotes, on a screen. The game is always called **Línea Directa**.
 
 ## Avoid
 

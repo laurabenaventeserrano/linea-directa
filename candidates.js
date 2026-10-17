@@ -1,53 +1,56 @@
-// LÍNEA DIRECTA · the eleven candidates.
+// LÍNEA DIRECTA · the twelve candidates.
 //
-// This is everything the game knows about them. Each round the hotline picks one
-// of the candidates who hasn't been blocked yet and gives clues about their traits.
-// You can call anyone to hear them out (they answer with `hello`). When you know,
-// you block them from their card: the right one is gone for good, the wrong one
-// ends the game. To add someone, copy a block:
-//   traits:  one value per trait (see TRAITS). Two people can share a combination;
-//            the hotline then tells them apart with "it's not {name}" clues.
+// THE GOAL: one of them likes you. Guess who, and block them.
+//
+// This is everything the game knows about them. Each round one of the candidates
+// who hasn't been blocked yet has a crush on you, and the hotline gives clues
+// about their traits. You can call anyone to hear them out (they answer with
+// `hello`). When you know, you block them from their card: the right one is gone
+// for good, the wrong one ends the game. To add someone, copy a block:
+//   traits:  one value per trait (see TRAITS). No two people share a combination.
 //   hello:   what they say when you call them. Make it hint at their red flag.
 //   pixels:  24×24 portrait. Each letter is a colour from `palette` (or from
 //            BASE_PALETTE in game.js); '.' is transparent and shows `bg`.
 //   reveal:  what the card shows once they're blocked.
+// Everything here is satire.
 
 window.LD_DATA = {
 
+  // The keys (texts, plans, exes) are the trait colours in the CSS; the labels are what shows.
   traits: {
-    texts: { label:'TEXTS', values:{ double:'double-texts', read:'leaves on read', late:'only at 2 a.m.' } },
-    plans: { label:'PLANS', values:{ big:'big plans', vague:'“let’s see”', cancel:'cancels last minute' } },
-    exes:  { label:'EXES',  values:{ crazy:'all “crazy”', close:'still close', secret:'won’t talk about it' } }
+    texts: { label:'TEXTS', values:{ double:'100 a day', late:'only at 2 a.m.', slow:'every 8 hours' } },
+    plans: { label:'PLANS', values:{ soon:'way too soon', never:'“let’s see”', cancel:'cancels' } },
+    exes:  { label:'TALKS', values:{ gym:'the gym', ex:'their ex', you:'you. a lot.' } }
   },
 
-  // What a caller says about the red flag. Several per value so jokes don't repeat.
+  // What the hotline says about the one who likes you. Several per value so jokes don't repeat.
   clues: {
     texts: {
       double: [
-        'They send “you up?”, then “hello??”, then “ok wow”. All inside ninety seconds.',
-        'Their texts arrive in paragraphs. Several. Before you’ve answered the first one.',
-        'They double-text. They triple-text. They once sent a voice note about a voice note.'
-      ],
-      read: [
-        'They watch every story you post but take three business days to reply.',
-        'Your last message to them says “Read”. It has said “Read” since March.',
-        'They reply “haha” to everything. Eventually.'
+        'The one who likes you sent “hey”, “hey??”, “ok wow” and a voice note. In ninety seconds.',
+        'Your admirer texts in paragraphs. Several. Before you’ve answered the first one.',
+        'They text you good morning, good night and eleven updates in between.'
       ],
       late: [
-        'Silent all day. Then, at 2:07 a.m.: “u up?”',
-        'Their messages only arrive after midnight. Like a vampire with wifi.',
-        'They text you at 3 a.m. and act surprised you were asleep.'
+        'The one who likes you only texts after midnight. “u up?” is their love language.',
+        'Silent all day. Then, at 2:07 a.m.: “thinking about u”.',
+        'They call you at 2 a.m. and act surprised you were asleep.'
+      ],
+      slow: [
+        'Your admirer replies like paracetamol: one every eight hours.',
+        'They answer your message from Monday on Thursday. With “haha”.',
+        'They watch your story in four seconds. They answer your text in four days.'
       ]
     },
     plans: {
-      big: [
-        'They’ve already named your future dog. You’ve met twice.',
+      soon: [
+        'The one who likes you has already named your future dog. You’ve met twice.',
         'They brought up a trip to Lisbon together. On the first date.',
-        'They have a five-year plan and you’re in it. Allegedly.'
+        'They want you to meet their mum. This Sunday. You met on Tuesday.'
       ],
-      vague: [
+      never: [
         'Ask them what you are and you get “let’s see where it goes”.',
-        'They won’t commit to dinner on Thursday. It’s Wednesday.',
+        'They’re “not ready for anything serious right now”. They’ve said it for three years.',
         'Their idea of a plan is “we’ll see”. They never see.'
       ],
       cancel: [
@@ -57,57 +60,57 @@ window.LD_DATA = {
       ]
     },
     exes: {
-      crazy: [
-        'All their exes are apparently crazy. Every single one.',
-        'Their ex “just didn’t get them”. Neither did the four before.',
-        'Ask about their ex and you get a forty-minute TED talk with no happy ending.'
+      gym: [
+        'The one who likes you can’t finish a sentence without saying “leg day”.',
+        'Every date is near a gym. Every photo is a mirror selfie.',
+        'They asked how much protein is in your love.'
       ],
-      close: [
-        'They’re “still really close” with their ex. They had brunch on Sunday.',
-        'Their ex likes every photo within a minute. Apparently it’s nothing.',
-        'They keep every ex in their contacts. Just in case.'
+      ex: [
+        'Your admirer has mentioned their ex in every conversation. Including this one.',
+        'They still have their ex’s hoodie, Netflix and mum’s number.',
+        'Ask about their week and you get the full history of their last relationship.'
       ],
-      secret: [
-        'Ask about their last relationship and they change the subject. To the weather.',
-        'Their past is “complicated”. That’s all you’ll ever get.',
-        'They have no exes, apparently. They were born at 28.'
+      you: [
+        'They’ve liked every photo you’ve posted since 2016. Tonight.',
+        'They talk about you to everyone. They’ve met you once.',
+        'They know your coffee order, your star sign and your ex’s new partner’s name.'
       ]
     }
   },
 
-  // The hotline: answering or calling it gets you the next clue about the current red flag.
+  // The hotline: answering or calling it gets you the next clue about the one who likes you.
   hotline: {
     number:'555-3524', label:'555-FLAG',
-    ring:'Línea Directa. Someone on your list is a disaster. Here’s what we know.',
-    again:'Hotline again. More dirt, coming up.',
-    not:'And one more thing: it’s not {name}.',
-    empty:'That’s everything we have. Time to guess.',
-    enough:'You already know enough. Block them.'
+    ring:'Línea Directa. Someone in your lineup likes you. Sorry. Here’s what we know.',
+    again:'Hotline again. More on your admirer, coming up.',
+    not:'And one more thing: it’s not {name}. They don’t even know you exist.',
+    empty:'That’s everything we have. Find them. Block them.',
+    enough:'You know who likes you. Block them before they text.'
   },
-  // What the red flag says when you block them.
+  // What the one who liked you says when you block them.
   caught: [
-    '…okay. Fine. It’s me.',
-    'Who told you? Was it my ex? It was my ex.',
-    'I mean, technically, yes.',
-    'Wow. Okay. Yes. But in my defence…'
+    'Wait, you’re blocking me? I already named our dog.',
+    'Blocked? Bold. I’ll just watch your stories, then.',
+    'Fine. I’ll text you at 2 a.m. to talk about it.',
+    'My ex never blocked me, just so you know.'
   ],
   // Completion screen, chosen by how many clues and calls it took.
   ending: [
-    { max:20, title:'Certified red flag detector', line:'Eleven disasters avoided. Your therapist would be proud. Now delete the apps.' },
-    { max:30, title:'Mostly survived', line:'You got there. A few too many calls, but honestly that’s just dating.' },
-    { max:999, title:'You would have dated all of them', line:'You found every red flag eventually. Mostly by calling them. Please never do this in real life.' }
+    { max:20, title:'Certified heart blocker', line:'Twelve admirers, twelve blocks. Your therapist would be proud. Now delete the apps.' },
+    { max:30, title:'Mostly survived', line:'You blocked them all. A few too many calls, but honestly that’s just dating.' },
+    { max:999, title:'You would have dated all of them', line:'You blocked every admirer eventually. Mostly by calling them. Please never do this in real life.' }
   ],
 
   candidates: [
     {
       id:'jordan', name:'Jordan', age:31, phone:'555-0101', bg:'#CFE6D4', pitch:.85,
-      traits:{ texts:'read', plans:'cancel', exes:'secret' },
+      traits:{ texts:'slow', plans:'cancel', exes:'you' },
       hello:'…oh. Hey. I just saw your message. From Tuesday.',
       reveal:{
-        archetype:'The Ghoster', flag:'Vanishes mid-conversation',
+        archetype:'The Ghoster', flag:'Vanishes mid-crush',
         quote:'I’m not really on my phone that much.',
-        stats:[['Last seen','2 months ago'],['Status','online (apparently)'],['Reply rate','0%']],
-        why:'Disappears exactly when you start thinking this might actually go somewhere.',
+        stats:[['Last seen','2 months ago'],['Status','online (apparently)'],['Comes back','when you’re over it']],
+        why:'Likes you just enough to disappear. Then comes back like a zombie the week you finally move on.',
         danger:'Emotional damage', level:4
       },
       palette:{ s:'#EAD3C0', d:'#C9AE98', h:'#2B2522', v:'#2B2522', c:'#4B4F5C' },
@@ -141,10 +144,10 @@ window.LD_DATA = {
     },
     {
       id:'ricky', name:'Ricky', age:34, phone:'555-0102', bg:'#F4CFC8', pitch:1.15,
-      traits:{ texts:'double', plans:'big', exes:'crazy' },
+      traits:{ texts:'double', plans:'soon', exes:'you' },
       hello:'Hey you. I literally just thought about you. Isn’t that crazy?',
       reveal:{
-        archetype:'The Love Bomber', flag:'Too much, too fast',
+        archetype:'The Love Bomber', flag:'Way too intense, way too soon',
         quote:'I’ve never felt this way before.',
         stats:[['“I love you” after','4 days'],['Bouquets before date two','3'],['Playlists made for you','2']],
         why:'Hands you the whole relationship in two weeks, then asks why you’re being so distant.',
@@ -185,10 +188,10 @@ window.LD_DATA = {
     },
     {
       id:'sam', name:'Sam', age:28, phone:'555-0103', bg:'#EFE3CF', pitch:1.05,
-      traits:{ texts:'late', plans:'vague', exes:'secret' },
-      hello:'Heyyy. What are we? Kidding. Don’t answer that.',
+      traits:{ texts:'late', plans:'never', exes:'gym' },
+      hello:'Heyyy. What are we? Don’t answer that. Labels are for jam jars.',
       reveal:{
-        archetype:'The Situationship', flag:'No labels, ever',
+        archetype:'The No Labels', flag:'Won’t say what you are',
         quote:'Why do we have to put a label on it?',
         stats:[['Time together','7 months'],['Official status','n/a'],['Met the parents','technically']],
         why:'All the benefits of a relationship, none of the paperwork. You are the paperwork.',
@@ -224,14 +227,14 @@ window.LD_DATA = {
     },
     {
       id:'casey', name:'Casey', age:30, phone:'555-0104', bg:'#CFE6D4', pitch:1.2,
-      traits:{ texts:'late', plans:'cancel', exes:'close' },
-      hello:'Omg hiii. I saw your story. Anyway, gotta go!',
+      traits:{ texts:'late', plans:'cancel', exes:'you' },
+      hello:'Heyyy. Sorry, is it late? It’s not late. Are you up?',
       reveal:{
-        archetype:'The Breadcrumber', flag:'Just enough attention',
-        quote:'We should totally hang out soon!!',
-        stats:[['Messages per month','1 (at 1 a.m.)'],['Stories watched','all of them'],['Plans made','0']],
-        why:'Drops a like every three weeks. Just enough to keep you hungry.',
-        danger:'Slow starvation', level:2
+        archetype:'The 2 a.m. Caller', flag:'Only calls after midnight',
+        quote:'You up?',
+        stats:[['Calls before 11 p.m.','0'],['Calls after 2 a.m.','all of them'],['Daylight dates','pending']],
+        why:'Completely into you between 2 and 4 a.m. Completely busy the rest of the day.',
+        danger:'Sleep deprivation', level:3
       },
       palette:{ s:'#C98D63', d:'#A86E47', h:'#2A1C17', v:'#2A1C17', c:'#4A5D86', C:'#33426A' },
       pixels:[
@@ -268,14 +271,14 @@ window.LD_DATA = {
     },
     {
       id:'brad', name:'Brad', age:36, phone:'555-0105', bg:'#F4CFC8', pitch:.7,
-      traits:{ texts:'double', plans:'vague', exes:'crazy' },
-      hello:'Yo. Before you ask: my ex was crazy.',
+      traits:{ texts:'double', plans:'never', exes:'gym' },
+      hello:'Yo. Can’t talk long, between sets. You lift?',
       reveal:{
-        archetype:'The Walking Red Flag', flag:'Every ex was “crazy”',
-        quote:'My ex was psycho. Like, all of them.',
-        stats:[['Exes','6'],['Exes who were “crazy”','6'],['Self-awareness','loading…']],
-        why:'If every story has the same villain, check who’s telling it.',
-        danger:'Actual hazard', level:5
+        archetype:'The Gym Bro', flag:'Only talks about the gym',
+        quote:'Rest day? Never heard of her.',
+        stats:[['Mirror selfies','312'],['Questions about you','0'],['Protein shakes per date','2']],
+        why:'Likes you almost as much as leg day. Almost.',
+        danger:'Protein overdose', level:2
       },
       palette:{ s:'#D9A27A', d:'#B57D55', h:'#5A3A22', g:'#8A5E3C', v:'#5A3A22', c:'#2B2421', C:'#17120F' },
       pixels:[
@@ -307,14 +310,14 @@ window.LD_DATA = {
     },
     {
       id:'robin', name:'Robin', age:33, phone:'555-0106', bg:'#EFE3CF', pitch:.9,
-      traits:{ texts:'read', plans:'big', exes:'secret' },
-      hello:'Hi. Is this going to be a conversation? Okay.',
+      traits:{ texts:'slow', plans:'never', exes:'ex' },
+      hello:'Hi. Look, I’m not ready for anything right now. Anyway, how are you?',
       reveal:{
-        archetype:'The Emotionally Unavailable', flag:'Feelings: out of office',
-        quote:'Can we not do the whole feelings thing?',
-        stats:[['Deep talks','0'],['Subject changes per minute','3'],['Headphones','always on']],
-        why:'Takes you to a rooftop dinner, then changes the subject the moment you say “feelings”.',
-        danger:'Cold front', level:3
+        archetype:'The Not Ready', flag:'Not ready for a relationship',
+        quote:'I really like you, but I’m not in a place for this.',
+        stats:[['Years not ready','3'],['Times they said it','19'],['Dates anyway','weekly']],
+        why:'Not ready for a relationship. Somehow always ready for a date with you.',
+        danger:'Endless waiting', level:3
       },
       palette:{ s:'#8D5A3B', d:'#6E422A', h:'#17120F', v:'#17120F', c:'#2E2A2B', C:'#17120F' },
       pixels:[
@@ -346,14 +349,14 @@ window.LD_DATA = {
     },
     {
       id:'taylor', name:'Taylor', age:27, phone:'555-0107', bg:'#F4CFC8', pitch:1.25,
-      traits:{ texts:'read', plans:'vague', exes:'close' },
+      traits:{ texts:'double', plans:'cancel', exes:'gym' },
       hello:'Hey! Hold on, other line… Okay. Hi! Who’s this again?',
       reveal:{
-        archetype:'The Option Collector', flag:'Everyone on hold',
-        quote:'I’m just seeing where things go. With everyone.',
-        stats:[['Active chats','14'],['Dating apps','5'],['You are','option 9']],
-        why:'Never says yes, never says no. Keeps everyone warm, just in case.',
-        danger:'Waiting list', level:3
+        archetype:'The One With a Girlfriend', flag:'Already taken',
+        quote:'It’s complicated. She doesn’t get me like you do.',
+        stats:[['Girlfriends','1 (that you know of)'],['Phones','2'],['Photos with you','none, for some reason']],
+        why:'Likes you. Also likes their girlfriend. Can’t meet on weekends, for some reason.',
+        danger:'Plot twist', level:5
       },
       palette:{ s:'#A86B45', d:'#855032', h:'#1E1512', g:'#3C2A22', v:'#1E1512', c:'#3E9A5C', C:'#2B6B40' },
       pixels:[
@@ -390,13 +393,13 @@ window.LD_DATA = {
     },
     {
       id:'morgan', name:'Morgan', age:35, phone:'555-0108', bg:'#CFE6D4', pitch:1.1,
-      traits:{ texts:'double', plans:'big', exes:'close' },
+      traits:{ texts:'late', plans:'soon', exes:'you' },
       hello:'Hi! Quick question: aisle or window? For Lisbon. In spring.',
       reveal:{
-        archetype:'The Future Faker', flag:'Plans that never happen',
+        archetype:'The Too-Soon Planner', flag:'Plans the wedding on date one',
         quote:'We should go to Lisbon in spring. Just us.',
-        stats:[['Trips planned','4'],['Trips taken','0'],['Future dog’s name','Biscuit']],
-        why:'Sells you a whole future together. The future never actually shows up.',
+        stats:[['Trips planned','4'],['Dates so far','1'],['Future dog’s name','Biscuit']],
+        why:'Has your whole future in a planner after one coffee. You never got a say.',
         danger:'Long-term disappointment', level:4
       },
       palette:{ s:'#F2C29E', d:'#D59C76', h:'#E3B341', g:'#F4D27A', v:'#A97C1B', c:'#3F4E78', C:'#2B3657' },
@@ -433,14 +436,14 @@ window.LD_DATA = {
     },
     {
       id:'vicky', name:'Vicky', age:29, phone:'555-0109', bg:'#F4CFC8', pitch:1.15,
-      traits:{ texts:'double', plans:'cancel', exes:'crazy' },
-      hello:'Who was that on the other line? I heard the beep. I always hear the beep.',
+      traits:{ texts:'slow', plans:'never', exes:'you' },
+      hello:'Oh, hi! Loved your story. And the one before. And the one from 2019.',
       reveal:{
-        archetype:'The Detective', flag:'Checks your phone',
-        quote:'I’m not jealous. I just want to know who Sara is.',
-        stats:[['Location sharing','always on'],['Questions about your coworker','11'],['Trust','pending']],
-        why:'Calls it caring. Knows your last seen, your followers and your password.',
-        danger:'Full surveillance', level:4
+        archetype:'The Orbiter', flag:'Watches everything, says nothing',
+        quote:'Saw your story. Not that I was looking.',
+        stats:[['Stories watched','all of them'],['Messages sent','0'],['Likes on old photos','14']],
+        why:'Likes you from a safe distance. Never texts, never leaves, always orbiting.',
+        danger:'Full surveillance', level:3
       },
       palette:{ s:'#F3C9A8', d:'#D9A07E', h:'#B8442E', g:'#E07A5F', v:'#7A2A1C', c:'#8E5BB5', C:'#6A3F8C' },
       pixels:[
@@ -476,14 +479,14 @@ window.LD_DATA = {
     },
     {
       id:'mia', name:'Mia', age:26, phone:'555-0110', bg:'#CFE6D4', pitch:1.3,
-      traits:{ texts:'late', plans:'big', exes:'close' },
-      hello:'Hiii! Wait, say that again, I’m recording.',
+      traits:{ texts:'slow', plans:'soon', exes:'gym' },
+      hello:'Hiii! Sorry, just saw this. Eight hours later. As usual.',
       reveal:{
-        archetype:'The Content Creator', flag:'You’re content',
-        quote:'Can you do that again? The light was bad.',
-        stats:[['Dates filmed','all of them'],['Your face in the post','cropped'],['Caption about you','“my person”']],
-        why:'Every date is a shoot. You’re the lighting, the backdrop and the alibi.',
-        danger:'Public exposure', level:2
+        archetype:'The Paracetamol', flag:'Replies every 8 hours',
+        quote:'Sorry, just saw this!',
+        stats:[['Average reply time','8 hours'],['Doses per day','3'],['Effect','mild']],
+        why:'Likes you in small doses. One message every eight hours, with food.',
+        danger:'Mild relief', level:2
       },
       palette:{ s:'#F6CBA9', d:'#DDA585', h:'#E9C46A', g:'#F6E2A0', v:'#B08A3E', c:'#F28DB2', C:'#D46A94', r:'#E0566E' },
       pixels:[
@@ -519,13 +522,13 @@ window.LD_DATA = {
     },
     {
       id:'nina', name:'Nina', age:32, phone:'555-0111', bg:'#EFE3CF', pitch:1.0,
-      traits:{ texts:'late', plans:'vague', exes:'close' },
-      hello:'Oh. Hi. Sorry, I thought you were someone else.',
+      traits:{ texts:'double', plans:'never', exes:'ex' },
+      hello:'Oh. Hi. Sorry, I thought you were someone else. My ex has the same ringtone.',
       reveal:{
-        archetype:'The Unfinished Business', flag:'Not over her ex',
+        archetype:'The Ex Talker', flag:'Only talks about their ex',
         quote:'Sorry, that’s just something my ex used to say.',
         stats:[['Times the ex came up','23'],['Ex’s birthday','still celebrated'],['“Over it”','apparently']],
-        why:'Sitting across from you, still talking to someone who isn’t there.',
+        why:'Likes you. Talks about their ex. Sitting across from you, still talking to someone who isn’t there.',
         danger:'Rebound risk', level:3
       },
       palette:{ s:'#E8B58F', d:'#C99272', h:'#2B1B17', g:'#5A3A30', v:'#2B1B17', c:'#6C8EBF', C:'#4A6A99', r:'#C2416E' },
@@ -558,6 +561,49 @@ window.LD_DATA = {
       // the old photo
       over:[
         [16,17,'kkkkk'],[17,17,'kwrwk'],[18,17,'krrrk'],[19,17,'kwrwk'],[20,17,'kwwwk'],[21,17,'kkkkk']
+      ]
+    },
+    {
+      id:'alex', name:'Alex', age:38, phone:'555-0112', bg:'#EFE3CF', pitch:.8,
+      traits:{ texts:'late', plans:'cancel', exes:'ex' },
+      hello:'Hey. Can’t talk long. Text me, don’t call. Actually, don’t text either.',
+      reveal:{
+        archetype:'The Still Married', flag:'Married. Currently.',
+        quote:'We’re basically separated. We just live together. And share a bank account.',
+        stats:[['Wedding rings','1 (in the pocket)'],['“My ex-wife”','current wife'],['Free on weekends','never']],
+        why:'Likes you a lot. Talks about “the ex”, who still lives with them and is very much their wife.',
+        danger:'Divorce lawyer', level:5
+      },
+      palette:{ s:'#E8B48F', d:'#C48C68', h:'#2E2A28', g:'#4A4440', v:'#2E2A28', c:'#C9E2FF', C:'#8FB3DE', y:'#E3B341' },
+      pixels:[
+        '..........kkkk..........',
+        '.........khhhgk.........',
+        '.........khhhhk.........',
+        '........kkkhhkkk........',
+        '.......khhhhhhhhk.......',
+        '......khhhhhhhghhk......',
+        '......khhhsshhhhhk......',
+        '.....khhsssssshhshk.....',
+        '.....khsssssssssshk.....',
+        '.....khsvvvssvvvshk.....',
+        '.....khsssssssssshk.....',
+        '.....khskksssskkshk.....',
+        '.....khspssddsspshk.....',
+        '.....khsssssssksshk.....',
+        '......ksssskkksssk......',
+        '.......kssssssssk.......',
+        '........kkddddkk........',
+        '.........kssssk.........',
+        '....kkkkkksssskkkkkk....',
+        '...ksssssssssskccccck...',
+        '..kssskcccccccccccccck..',
+        '.kskcccccccccccccccccck.',
+        '.kskcccccccccccccccccck.',
+        '.kskcccccccCcccccccccck.'
+      ],
+      // the wedding ring
+      over:[
+        [16,1,'kkkk'],[17,1,'kssk'],[18,1,'kyyk'],[19,1,'kssk'],[20,1,'kssk']
       ]
     }
   ]

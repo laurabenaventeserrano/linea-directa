@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Línea Directa · el juego</title>
-<meta name="description" content="A 1995 telephone dating game. Call the hotline, get the clues, and guess who’s going to screw up your life.">
+<title>Línea Directa · guess who likes you</title>
+<meta name="description" content="A 1995 telephone dating game. Someone in the lineup likes you. Call the hotline, get the clues, guess who it is and block them.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Titan+One&family=VT323&display=swap" rel="stylesheet">
@@ -89,7 +89,8 @@
   .title-phone.held .phone{animation:none}
   .title-phone.ring .phone{animation:ring .12s linear infinite}
   @keyframes wiggle{0%,70%,100%{transform:rotate(0)}74%{transform:rotate(-4deg)}78%{transform:rotate(4deg)}82%{transform:rotate(-3deg)}86%{transform:rotate(2deg)}}
-  .tagline{font-size:clamp(12px, 3.4vw, 15px);font-weight:700;color:var(--line);max-width:460px;line-height:1.4;text-wrap:balance}
+  .tagline{font-size:clamp(14px, 3.8vw, 18px);font-weight:700;color:var(--line);max-width:560px;line-height:1.5;text-wrap:balance}
+  .tagline b{font-family:var(--logo);font-weight:400;font-size:1.6em;color:var(--text)}
 
   /* La portada: las cartas en abanico detrás del teléfono, como una mano de cartas */
   #title{gap:14px;padding-bottom:12px;overflow:hidden}
@@ -413,7 +414,8 @@
   .hud .cell b{font-family:var(--lcd);font-weight:400;font-size:24px;line-height:1;color:var(--peri);background:var(--screen);border:2px solid var(--line);border-radius:6px;padding:0 6px}
   .hud .meter{display:flex;gap:2px}
   .hud .meter svg{width:16px;height:15px;display:block}
-  .hud .tools{margin-left:auto;display:flex;gap:8px}
+  .hud .tools{display:flex;gap:8px}
+  .hud .goal{margin-left:auto;font-size:11px;font-weight:700;color:var(--text);background:var(--blush);border:2px solid var(--line);border-radius:8px;padding:6px 10px 5px}
   .hud .btn{padding:6px 10px;font-size:11px}
 
   /* ---------- Letrero de caso ---------- */
@@ -500,7 +502,7 @@
     <div class="title-phone" id="titleStage" aria-hidden="true"></div>
     <div class="callerid" aria-hidden="true"><small>☎ INCOMING CALL</small><b>CALLER ID: ???</b></div>
   </div>
-  <p class="tagline">Guess who’s going to screw up your life.<br>Your next bad decision is just one call away.</p>
+  <p class="tagline"><b>Guess who likes you.</b><br>Then block them.</p>
   <nav class="menu" id="menu" aria-label="Menu">
     <button class="mi sel" id="startBtn">ANSWER THE HOTLINE</button>
     <button class="mi" id="tHelp">HOW TO PLAY</button>
@@ -514,10 +516,11 @@
 <section id="game">
   <header class="hud" aria-live="polite">
     <span class="case" id="hCase">CASE 01/11</span>
-    <span class="cell">FOUND <span class="meter" id="hMeter" aria-hidden="true"></span><b id="hFound">0/11</b></span>
+    <span class="cell">BLOCKED <span class="meter" id="hMeter" aria-hidden="true"></span><b id="hFound">0/11</b></span>
     <span class="cell">LIFE <span class="meter" id="hLife" aria-hidden="true"></span></span>
     <span class="cell">CLUES <b id="hClues">0</b></span>
     <span class="cell">CALLS <b id="hCalls">0</b></span>
+    <span class="goal">♥ SOMEONE HERE LIKES YOU · GUESS WHO · BLOCK THEM</span>
     <span class="tools">
       <button class="btn y" id="bRestart">NEW GAME</button>
     </span>
@@ -556,14 +559,14 @@
     </div>
 
     <div class="win lav">
-      <div class="bar"><span class="t" id="lineupT">✿ THE LINEUP</span><span class="dots"><i></i><i></i><i></i></span></div>
+      <div class="bar"><span class="t" id="lineupT">✿ THE LINEUP · ONE OF THEM LIKES YOU</span><span class="dots"><i></i><i></i><i></i></span></div>
       <div class="pad"><div class="board" id="board"></div></div>
     </div>
   </div>
 </section>
 </div>
 
-<div class="banner" id="banner" hidden aria-hidden="true"><span class="b1" id="bannerT">CASE 01</span><span class="b2">☎ INCOMING CALL</span></div>
+<div class="banner" id="banner" hidden aria-hidden="true"><span class="b1" id="bannerT">CASE 01</span><span class="b2">♥ WHO LIKES YOU?</span></div>
 
 <!-- ============ VENTANA ============ -->
 <div class="modal" id="modal" hidden>
