@@ -491,7 +491,7 @@ function modal(bar,html,close){
 }
 function closeModal(){ $('modal').hidden=true; const f=onClose; onClose=null; f&&f(); }
 $('mBody').addEventListener('click',e=>{ if(e.target.closest('[data-go]')) { Sound.unlock(); closeModal(); } });
-addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('modal').hidden){ e.preventDefault(); closeModal(); } });
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('modal').hidden){ e.preventDefault(); e.stopImmediatePropagation(); closeModal(); } }); // que Esc cierre la ventana sin colgar también
 
 function showReveal(p){
   const r=p.reveal, last=G.blocked.length===PEOPLE.length;
@@ -513,7 +513,7 @@ function showReveal(p){
 }
 function showComplete(){
   const score=G.clues+G.calls;
-  const end=DATA.ending.find(x=>score<=x.max);
+  const end=DATA.ending.find(x=>score<=x.max)||DATA.ending[DATA.ending.length-1];
   Sound.fanfare();
   modal('♥ ALL RED FLAGS IDENTIFIED',`
     <h2 id="mTitle">${esc(end.title)}</h2>
@@ -524,7 +524,6 @@ function showComplete(){
     ()=>{ newSession(); beginCase(false); });
 }
 function showLost(p,t){
-  Sound.fanfare();
   modal('♥ GAME OVER',`
     <div class="cand rv-card" style="--bg:${bgOf(t)}">
       ${cardTop(t)}
