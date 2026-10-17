@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Línea Directa · el juego</title>
+<meta name="description" content="A 1995 telephone dating game. Call the hotline, get the clues, and guess who’s going to screw up your life.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Titan+One&family=VT323&display=swap" rel="stylesheet">
+<style>
+  /* Estilo aprobado de Línea Directa (ver .claude/skills/linea-directa/SKILL.md).
+     El fucsia es solo del teléfono. Todo lo demás, pastel. */
+  :root{
+    --fuchsia:#FF2E9A;          /* el teléfono */
+    --line:#A9507E;             /* contornos y texto */
+    --text:#7A3A60;
+    --cream:#FFFBF4;
+    --blush:#FFD1E4;
+    --pink:#FFB3D1;
+    --mint:#C3F0DF;
+    --sky:#C9E2FF;
+    --lav:#DCCBFF;
+    --butter:#FFF0B3;
+    --peri:#7B86E6;             /* texto de pantalla */
+    --screen:#F1F0FF;
+    --green:#8ADB93;
+    --red:#FF7FA3;
+    --shadow:#F5A9C9;
+    --px:'Silkscreen', ui-monospace, monospace;
+    --lcd:'VT323', ui-monospace, monospace;
+    --logo:'Titan One', 'Arial Black', sans-serif;
+    /* las tres pistas: cada rasgo tiene su color pastel */
+    --t-texts:var(--pink);
+    --t-plans:var(--mint);
+    --t-exes:var(--butter);
+    --t-not:var(--lav);
+    /* cursores de píxel (cursors/make-cursors.py): flecha, mano que señala, mano abierta, puño */
+    --cur-arrow:url("cursors/arrow.svg") 1 1, default;
+    --cur-hand:url("cursors/hand.svg") 9 1, pointer;
+    --cur-grab:url("cursors/grab.svg") 16 14, grab;
+    --cur-grabbing:url("cursors/grabbing.svg") 16 12, grabbing;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{height:100%}
+  body{
+    min-height:100%;
+    background-color:var(--blush);
+    background-image:
+      linear-gradient(rgba(255,255,255,.75) 1.5px, transparent 1.5px),
+      linear-gradient(90deg, rgba(255,255,255,.75) 1.5px, transparent 1.5px),
+      linear-gradient(180deg, var(--mint) 0%, var(--blush) 45%, var(--butter) 100%);
+    background-size:28px 28px, 28px 28px, 100% 100%;
+    background-attachment:scroll, scroll, fixed;
+    color:var(--text);
+    font-family:var(--px);
+    cursor:var(--cur-arrow);
+    padding:16px;
+    -webkit-tap-highlight-color:transparent;
+    overflow-x:hidden;
+  }
+  button{font:inherit;color:inherit;cursor:var(--cur-hand);touch-action:manipulation}
+  button:disabled{cursor:var(--cur-arrow)}
+  [hidden]{display:none !important}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* ---------- Pantalla de inicio ---------- */
+  #title{
+    min-height:calc(100dvh - 32px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+    text-align:center;
+  }
+  .logo{display:flex;flex-direction:column;align-items:center;gap:2px;user-select:none}
+  .logo span{
+    display:inline-block;font-family:var(--logo);
+    font-size:clamp(40px, 11vw, 64px);line-height:1;
+    padding:6px 16px 10px;color:var(--fuchsia);background:var(--butter);
+    border:4px solid var(--line);border-radius:16px;
+    box-shadow:6px 6px 0 var(--shadow);
+    -webkit-text-stroke:3px var(--line);paint-order:stroke fill;
+  }
+  .logo .w1{transform:rotate(-5deg) translateX(-22px)}
+  .logo .w2{transform:rotate(3deg) translateX(18px);background:var(--sky)}
+  .logo .heart{position:relative;z-index:2;margin:-14px 0;width:38px;height:34px}
+  .title-phone{position:relative;width:min(220px, 52vw);touch-action:none;cursor:var(--cur-grab)}
+  .title-phone.held{cursor:var(--cur-grabbing)}
+  .title-phone svg{display:block;width:100%;height:auto}
+  .title-phone .phone{position:relative;z-index:2;width:62%;margin:0 auto -18%;transform-origin:50% 90%;animation:wiggle 2.6s ease-in-out infinite}
+  .title-phone.held .phone{animation:none}
+  .title-phone.ring .phone{animation:ring .12s linear infinite}
+  @keyframes wiggle{0%,70%,100%{transform:rotate(0)}74%{transform:rotate(-4deg)}78%{transform:rotate(4deg)}82%{transform:rotate(-3deg)}86%{transform:rotate(2deg)}}
+  .hint{font-size:11px;color:var(--text);max-width:340px;line-height:1.5;background:var(--cream);border:2px solid var(--line);border-radius:8px;padding:5px 10px}
+  .tagline{font-size:clamp(12px, 3.4vw, 15px);font-weight:700;color:var(--line);max-width:420px;line-height:1.4}
+
+  /* La portada: las cartas en abanico detrás del teléfono, como una mano de cartas */
+  #title{gap:14px;padding-bottom:12px;overflow:hidden}
+  .fan-stage{position:relative;width:min(780px, 100%);height:360px;display:flex;justify-content:center;align-items:flex-end}
+  .fan{position:absolute;left:50%;bottom:70px;width:0;height:0}
+  .fan .fcard{
+    position:absolute;left:-50px;bottom:0;width:100px;padding:5px;gap:4px;
+    transform-origin:50% 330%;transform:rotate(calc(var(--i) * 8deg));
+    animation:deal .7s cubic-bezier(.2,1.3,.4,1) both;animation-delay:calc((var(--i) + 6) * 40ms);
+  }
+  .fan .fcard .name{font-size:12px;padding:2px 5px 3px}
+  .fan .fcard .name small{display:none}
+  .fan .fcard .cand-top .no{font-size:7px;padding:1px 3px}
+  .fan .fcard .tel{font-size:15px;padding:1px 4px 2px;box-shadow:none}
+  @keyframes deal{from{transform:rotate(0deg) translateY(30px);opacity:0}}
+  .fan-stage .title-phone{z-index:3;width:min(200px, 46vw)}
+  .callerid{
+    position:absolute;z-index:4;left:calc(50% + 62px);top:26px;transform:rotate(4deg);
+    display:flex;flex-direction:column;gap:1px;text-align:left;
+    background:var(--screen);border:3px solid var(--line);border-radius:12px;
+    box-shadow:inset 0 0 0 3px var(--lav), 4px 4px 0 var(--line);padding:6px 11px 5px;
+  }
+  .callerid small{font-size:8px;font-weight:700;color:var(--line)}
+  .callerid b{font-family:var(--lcd);font-weight:400;font-size:21px;line-height:1;color:var(--peri)}
+  /* El menú del juego, con el corazón como selector */
+  .menu{
+    display:flex;flex-direction:column;gap:4px;min-width:min(290px, 100%);
+    background:var(--cream);border:3px solid var(--line);border-radius:16px;
+    box-shadow:6px 6px 0 var(--shadow);padding:8px;
+  }
+  .mi{
+    position:relative;text-align:left;font-family:var(--px);font-weight:700;font-size:13px;color:var(--text);
+    background:none;border:2px solid transparent;border-radius:9px;padding:8px 12px 7px 36px;
+  }
+  .mi.sel{background:var(--butter);border-color:var(--line);box-shadow:2px 2px 0 var(--line)}
+  .mi.sel::before{
+    content:"";position:absolute;left:10px;top:50%;width:17px;height:15px;margin-top:-8px;
+    background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 54'%3E%3Cpath d='M30 50C13 37 4 29 4 18 4 10 10 4 18 4c5 0 9 3 12 7 3-4 7-7 12-7 8 0 14 6 14 14 0 11-9 19-26 32z' fill='%23FF7FA3' stroke='%23A9507E' stroke-width='6' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+    animation:nudge .6s steps(2) infinite;
+  }
+  @keyframes nudge{50%{transform:translateX(3px)}}
+  .mi:focus-visible{outline:3px solid var(--peri);outline-offset:2px}
+  .press{font-size:12px;font-weight:700;color:var(--line);animation:blink 1s steps(1) infinite}
+  @media (max-width:560px){
+    .fan-stage{height:270px}
+    .fan{bottom:56px}
+    .fan-stage .title-phone{width:min(150px, 40vw)}
+    .fan .fcard{left:-29px;width:58px;padding:3px;gap:3px;transform-origin:50% 300%;transform:rotate(calc(var(--i) * 8deg))}
+    .fan .fcard .cand-top .no{display:none}
+    .fan .fcard .name{font-size:10px}
+    .fan .fcard .tel{font-size:12px}
+    .callerid{left:auto;right:4px;top:4px}
+    .callerid b{font-size:17px}
+  }
+
+  .btn{
+    font-family:var(--px);font-weight:700;color:var(--text);
+    background:var(--cream);border:3px solid var(--line);
+    box-shadow:3px 3px 0 var(--line);
+    padding:9px 12px;font-size:12px;border-radius:12px;
+    transition:transform .05s;
+  }
+  .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+  .btn:focus-visible,.heartbtn:focus-visible,.pick:focus-visible,.tel:focus-visible,.ph:focus-visible{outline:3px solid var(--peri);outline-offset:3px}
+  .btn.y{background:var(--butter)}
+  .btn.on{background:var(--lav)}
+  .btn.glow{animation:pulse .7s ease-in-out infinite}
+  .btn-big{
+    font-size:clamp(16px, 4.6vw, 22px);padding:14px 26px;background:var(--butter);border-width:4px;
+    box-shadow:6px 6px 0 var(--shadow), 6px 6px 0 4px var(--line);border-radius:16px;
+  }
+  .btn-big:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--shadow), 2px 2px 0 4px var(--line)}
+
+  /* ---------- Ventanas ---------- */
+  #game{max-width:1180px;margin:0 auto}
+  .layout{display:grid;grid-template-columns:minmax(300px, 380px) 1fr;gap:20px;align-items:start}
+  .col{display:flex;flex-direction:column;gap:20px;min-width:0}
+  .win{
+    background:var(--cream);border:3px solid var(--line);border-radius:16px;
+    box-shadow:6px 6px 0 var(--shadow);
+    overflow:hidden;min-width:0;
+  }
+  .bar{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    background:var(--pink);border-bottom:3px solid var(--line);
+    padding:6px 12px;font-size:11px;font-weight:700;color:var(--line);
+  }
+  .win.mint .bar{background:var(--mint)}
+  .win.sky .bar{background:var(--sky)}
+  .win.lav .bar{background:var(--lav)}
+  .win.butter .bar{background:var(--butter)}
+  .bar .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dots{display:flex;gap:6px;flex:none}
+  .dots i{width:13px;height:13px;border-radius:50%;border:2px solid var(--line);background:#FFE58A}
+  .dots i:nth-child(2){background:var(--green)}
+  .dots i:nth-child(3){background:var(--red)}
+  .pad{padding:12px}
+  .status{display:flex;align-items:center;border-top:3px solid var(--line);font-size:10px;color:var(--line)}
+  .status span{padding:6px 10px;border-right:2px solid var(--line);white-space:nowrap}
+  .status span:last-child{border-right:0;flex:1;overflow:hidden;text-overflow:ellipsis}
+  .status .live{background:var(--butter)}
+  .status .live.red{background:var(--red)}
+  .status b{font-weight:700;color:var(--text)}
+  .status .mini{padding:2px 8px;font-size:10px;box-shadow:2px 2px 0 var(--line);border-width:2px;border-radius:8px}
+  .foot{border-top:3px dashed var(--shadow);padding:8px 12px;font-size:9px;line-height:1.6;color:var(--line)}
+
+  /* Pantalla (como la del móvil de referencia) */
+  .lcd{
+    background:var(--screen);border:3px solid var(--line);border-radius:14px;
+    box-shadow:inset 0 0 0 4px var(--lav);
+    padding:10px 13px;color:var(--peri);min-height:100px;
+    display:flex;flex-direction:column;justify-content:center;gap:3px;
+  }
+  .lcd small{font-family:var(--px);font-size:9px;color:var(--line)}
+  .lcd .say{font-family:var(--lcd);font-size:27px;line-height:1}
+  .lcd .say b{font-weight:400;color:var(--line)}
+  .lcd .say.red{color:var(--line)}
+  .lcd .say .cur{display:inline-block;width:.45em;background:var(--peri);color:transparent;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .lcd.glitch{animation:flash .45s steps(2) 1}
+  @keyframes flash{50%{background:var(--lav)}}
+
+  /* El teléfono en su base */
+  .phone-row{display:flex;flex-direction:column;gap:12px}
+  .dock{position:relative;height:440px;touch-action:none}
+  .dock .base{position:absolute;left:50%;bottom:6px;width:230px;transform:translateX(-50%)}
+  .dock .base svg{display:block;width:100%;height:auto}
+  .ph{
+    position:absolute;left:50%;bottom:44px;width:160px;margin-left:-80px;z-index:5;
+    touch-action:none;cursor:var(--cur-grab);user-select:none;-webkit-user-select:none;
+    transform-origin:50% 85%;
+  }
+  .ph.anim{transition:transform .28s cubic-bezier(.3,1.5,.5,1)}
+  .ph.drag{cursor:var(--cur-grabbing)}
+  .ph svg{display:block;width:100%;height:auto;overflow:visible}
+  .ph .k{cursor:var(--cur-hand)}
+  .ph .k.down rect.face{fill:#FFE14D}
+  .ph .k.down text{fill:#2A0F45}
+  .ph.ring svg{animation:ring .12s linear infinite}
+  @keyframes ring{0%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}100%{transform:rotate(-3deg)}}
+  .phonewin{overflow:visible;position:relative;z-index:10}
+  .phonewin .bar{border-radius:13px 13px 0 0}
+  .phonewin .status{border-radius:0 0 13px 13px;overflow:hidden}
+  .side{display:flex;flex-direction:column;gap:12px}
+
+  /* Llamar · borrar · colgar (botones corazón) */
+  .callpad{
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;
+    background:var(--blush);border:3px solid var(--line);border-radius:18px;padding:10px 12px;
+  }
+  .heartbtn{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:none;border:0;font-size:9px;font-weight:700;color:var(--line);
+  }
+  .heartbtn svg{display:block;width:62px;height:auto;filter:drop-shadow(3px 3px 0 var(--line));transition:transform .06s}
+  .heartbtn:active svg{transform:translate(2px,2px);filter:drop-shadow(1px 1px 0 var(--line))}
+  .heartbtn.small svg{width:46px}
+  .heartbtn.glow svg{animation:pulse .7s ease-in-out infinite}
+  @keyframes pulse{50%{transform:scale(1.1)}}
+  .heartbtn[disabled]{opacity:.45;cursor:var(--cur-arrow)}
+  .actions{display:grid;grid-template-columns:1fr auto auto;gap:10px}
+  .actions .btn{min-width:44px;white-space:nowrap}
+
+  /* Pistas (como la lista del reproductor) */
+  .list{
+    background:var(--screen);border:3px solid var(--line);border-radius:12px;
+    padding:8px 10px;font-family:var(--lcd);font-size:21px;line-height:1.1;color:var(--peri);
+    max-height:220px;overflow:auto;list-style:none;
+  }
+  .list li{display:flex;gap:7px;align-items:baseline;padding:3px 0}
+  .list li.prev{opacity:.75}
+  .list .none{color:var(--line);display:block}
+  .tag{
+    flex:none;font-family:var(--px);font-size:8px;font-weight:700;color:var(--line);
+    border:2px solid var(--line);border-radius:5px;padding:1px 4px;transform:translateY(-2px);
+  }
+  .tag.texts{background:var(--t-texts)}
+  .tag.plans{background:var(--t-plans)}
+  .tag.exes{background:var(--t-exes)}
+  .tag.not{background:var(--t-not)}
+
+  /* ---------- Las cartas de los personajes ----------
+     La carta del juego de mesa: rosa con corazones y 555, el nombre en su
+     etiqueta amarilla, la foto con tira de película y el número en pantalla. */
+  .board{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:18px 14px;padding:6px 4px 8px}
+  .cand{
+    position:relative;display:flex;flex-direction:column;gap:6px;min-width:0;
+    background-color:var(--pink);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M11 9c-2-3-7-2-7 2 0 3 4 5 7 8 3-3 7-5 7-8 0-4-5-5-7-2z' fill='%23FFFBF4' stroke='%23A9507E' stroke-width='1.4'/%3E%3Ctext x='24' y='38' font-family='monospace' font-size='9' font-weight='bold' fill='%23A9507E'%3E555%3C/text%3E%3C/svg%3E");
+    border:3px solid var(--line);border-radius:12px;
+    box-shadow:4px 4px 0 var(--line);
+    padding:7px;transition:transform .12s, box-shadow .12s;
+  }
+  .board .cand:nth-child(4n+1){transform:rotate(-1.5deg)}
+  .board .cand:nth-child(4n+2){transform:rotate(1deg)}
+  .board .cand:nth-child(4n+3){transform:rotate(-.5deg)}
+  .board .cand:nth-child(4n){transform:rotate(1.5deg)}
+  .board .cand:hover{transform:translateY(-3px) rotate(0deg)}
+  .cand-top{display:flex;align-items:center;gap:5px;min-width:0}
+  .cand-top .no{flex:none;font-size:9px;font-weight:700;color:var(--line);background:var(--cream);border:2px solid var(--line);border-radius:6px;padding:2px 4px}
+  .name{font-family:var(--logo);font-size:15px;line-height:1;color:var(--text);background:var(--butter);border:2px solid var(--line);border-radius:6px;padding:3px 6px 4px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .name small{font-family:var(--px);font-size:9px;color:var(--line);margin-left:3px}
+  .frame{position:relative;display:flex;border:2px solid var(--line);background:var(--cream);width:100%;padding:0}
+  .frame .strip{width:7px;flex:none;background:var(--line);background-image:linear-gradient(var(--cream) 45%, transparent 45%);background-size:3px 7px;background-position:2px 2px;background-repeat:repeat-y}
+  .pic{flex:1;aspect-ratio:1;background:var(--bg, var(--butter));overflow:hidden;display:block}
+  .pic img,.pic svg{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;transition:filter .2s, opacity .2s}
+  .xout{position:absolute;inset:0;display:none;pointer-events:none}
+  .xout svg{width:100%;height:100%}
+  .stamp{
+    position:absolute;left:50%;top:80%;z-index:2;display:none;
+    font-family:var(--px);font-weight:700;font-size:11px;white-space:nowrap;color:var(--line);
+    padding:3px 7px 2px;border:3px solid currentColor;border-radius:6px;background:var(--butter);
+    box-shadow:2px 2px 0 var(--line);
+    transform:translate(-50%,-50%) rotate(-12deg);
+  }
+  .chips{list-style:none;display:flex;flex-direction:column;gap:3px;background:var(--cream);border:2px solid var(--line);border-radius:8px;padding:4px}
+  .chip{display:flex;align-items:center;gap:5px;min-width:0}
+  .chip b{flex:none;width:44px;text-align:center;font-size:7px;font-weight:700;color:var(--line);border:2px solid var(--line);border-radius:4px;padding:2px 0 1px}
+  .chip span{font-family:var(--lcd);font-size:17px;line-height:.9;color:var(--text);min-width:0;overflow-wrap:anywhere}
+  .chip.texts b{background:var(--t-texts)}
+  .chip.plans b{background:var(--t-plans)}
+  .chip.exes b{background:var(--t-exes)}
+  .rev{display:none;flex-direction:column;gap:3px;background:var(--cream);border:2px solid var(--line);border-radius:8px;padding:5px 6px}
+  .rev .arch{font-family:var(--logo);font-size:13px;line-height:1.05;color:var(--text)}
+  .rev .fl{font-size:8px;line-height:1.4;color:var(--line)}
+  .tel{
+    display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;
+    font-family:var(--lcd);font-size:22px;line-height:1;color:var(--peri);
+    background:var(--screen);border:2px solid var(--line);border-radius:6px;padding:2px 6px 3px;
+    box-shadow:2px 2px 0 var(--line);transition:transform .05s;margin-top:auto;
+  }
+  .tel small{font-family:var(--px);font-size:7px;color:var(--line)}
+  .tel:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--line)}
+  /* Bloquear: el botón de adivinar. Si es el que no es, se acaba la partida. */
+  .blk{
+    width:100%;font-family:var(--px);font-weight:700;font-size:9px;color:var(--text);
+    background:var(--red);border:2px solid var(--line);border-radius:6px;padding:5px 4px 4px;
+    box-shadow:2px 2px 0 var(--line);transition:transform .05s;
+  }
+  .blk:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--line)}
+  .blk.armed{background:var(--butter);animation:pulse .7s ease-in-out infinite}
+  .blk:focus-visible{outline:3px solid var(--peri);outline-offset:3px}
+  .cand.blocked .blk,.cand.blocked .tel small{visibility:hidden}
+
+  /* Etiqueta al pasar el ratón por algo que se puede tocar */
+  .tip{
+    position:fixed;z-index:70;pointer-events:none;white-space:nowrap;
+    font-family:var(--px);font-weight:700;font-size:10px;color:var(--line);
+    background:var(--butter);border:2px solid var(--line);border-radius:6px;
+    box-shadow:2px 2px 0 var(--line);padding:3px 7px 2px;
+    transform:translate(-50%, calc(-100% - 6px));
+  }
+  .tip.below{transform:translate(-50%, 34px)} /* debajo de la mano */
+
+  /* estados de la carta */
+  .cand.crossed .pic svg{filter:grayscale(1);opacity:.4}
+  .cand.crossed .xout{display:block}
+  .cand.crossed .chips > *{opacity:.5}
+  .cand.nope .stamp{display:block;background:var(--cream)}
+  .cand.nope{animation:shake .32s linear 1}
+  @keyframes shake{20%{translate:-5px 0}40%{translate:5px 0}60%{translate:-3px 0}80%{translate:3px 0}}
+  .board .cand.dialled{transform:translateY(-4px) rotate(0deg);box-shadow:4px 4px 0 var(--line), 0 0 0 4px var(--peri)}
+  .board .cand.live{transform:translateY(-4px) rotate(0deg);box-shadow:4px 4px 0 var(--line), 0 0 0 4px var(--green)}
+  .cand.blocked{background-image:none;background-color:var(--blush);box-shadow:2px 2px 0 var(--line)}
+  .board .cand.blocked{transform:none}
+  .cand.blocked .pic svg{filter:grayscale(1);opacity:.55}
+  .cand.blocked .pick{cursor:var(--cur-arrow)}
+  .cand.blocked .stamp{display:block}
+  .cand.blocked .chips{display:none}
+  .cand.blocked .rev{display:flex}
+  .cand.blocked .tel{background:transparent;border-style:dashed;box-shadow:none;color:var(--line);cursor:var(--cur-arrow)}
+  .cand.just .stamp{animation:stamp .38s cubic-bezier(.2,1.6,.4,1) 1}
+  @keyframes stamp{0%{transform:translate(-50%,-50%) rotate(-12deg) scale(2.6);opacity:0}60%{opacity:1}100%{transform:translate(-50%,-50%) rotate(-12deg) scale(1)}}
+
+  /* Ventana emergente */
+  .modal{
+    position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;
+    background-color:rgba(255,209,228,.92);
+    background-image:linear-gradient(rgba(255,255,255,.8) 1.5px, transparent 1.5px),linear-gradient(90deg, rgba(255,255,255,.8) 1.5px, transparent 1.5px);
+    background-size:28px 28px;
+  }
+  .modal .win{width:min(440px, 100%);max-height:calc(100dvh - 32px);overflow:auto}
+  .modal .pad{display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
+  .modal ol{text-align:left;font-size:11px;line-height:1.6;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+  .modal h2{font-family:var(--logo);font-size:28px;line-height:1.05;color:var(--fuchsia);-webkit-text-stroke:2px var(--line);paint-order:stroke fill}
+  .modal p{font-size:11px;line-height:1.5}
+  .rv-card{width:min(190px, 60%);transform:rotate(-2deg)}
+  .rv-card .stamp{display:block}
+  .who{font-size:9px;color:var(--line)}
+  .modal q{display:block;font-family:var(--lcd);font-size:22px;line-height:1.05;color:var(--peri);quotes:"“" "”"}
+  .stats{width:100%;display:flex;flex-direction:column;gap:2px;background:var(--screen);border:3px solid var(--line);border-radius:12px;padding:8px 10px;font-family:var(--lcd);font-size:19px;line-height:1.05;color:var(--peri);text-align:left}
+  .stats div{display:flex;gap:6px;align-items:baseline}
+  .stats dt{flex:none}
+  .stats .lead{flex:1;border-bottom:2px dotted var(--lav);transform:translateY(-4px);min-width:12px}
+  .stats dd{color:var(--text);text-align:right}
+  .flagbox{width:100%;display:flex;gap:10px;align-items:center;text-align:left;background:var(--lav);border:3px solid var(--line);border-radius:12px;padding:8px 12px;box-shadow:3px 3px 0 var(--line)}
+  .flagbox svg{width:28px;height:28px;flex:none}
+  .flagbox small{display:block;font-size:8px;font-weight:700;color:var(--line)}
+  .flagbox b{font-family:var(--logo);font-size:17px;font-weight:400;line-height:1.1;color:var(--text)}
+  .danger{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;font-size:9px;font-weight:700;color:var(--line)}
+  .danger .meter{display:flex;gap:3px}
+  .danger .meter svg{width:20px;height:18px}
+  .danger b{font-size:10px;color:var(--text)}
+  .roll{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+  .roll span{position:relative;display:flex;border:2px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg)}
+  .roll svg{width:100%;height:auto;filter:grayscale(1);opacity:.7}
+  .roll span::after{content:"";position:absolute;inset:0;background:linear-gradient(to top right,transparent 46%,var(--line) 46% 54%,transparent 54%)}
+  .score{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .score span{font-size:10px;font-weight:700;color:var(--line);background:var(--butter);border:2px solid var(--line);border-radius:8px;padding:5px 8px}
+
+  @media (max-width:1100px){ .board{grid-template-columns:repeat(3, minmax(0,1fr))} }
+  @media (max-width:900px){ .board{grid-template-columns:repeat(2, minmax(0,1fr))} }
+  @media (max-width:760px){
+    body{padding:12px}
+    .layout{grid-template-columns:1fr}
+    .board{grid-template-columns:repeat(4, minmax(0,1fr));gap:14px 10px}
+    .phone-row{display:grid;grid-template-columns:44% 1fr;gap:10px;align-items:start}
+    .dock{height:340px}
+    .ph{width:128px;margin-left:-64px;bottom:34px}
+    .dock .base{width:150px}
+    .lcd{min-height:110px}
+    .lcd .say{font-size:22px}
+    .callpad{padding:8px;gap:6px}
+    .heartbtn svg{width:50px}
+    .heartbtn.small svg{width:36px}
+    .actions{grid-template-columns:1fr 1fr;gap:8px}
+    .actions #bHot{grid-column:1/-1}
+  }
+  @media (max-width:640px){ .board{grid-template-columns:repeat(2, minmax(0,1fr))} }
+  @media (max-width:420px){
+    .name{font-size:13px}
+    .tel{font-size:18px}
+    .chip span{font-size:15px}
+    .status span:nth-child(3){display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .title-phone .phone,.title-phone.ring .phone,.fcard,.mi.sel::before,.press{animation:none}
+    .ph.ring svg,.heartbtn.glow svg,.btn.glow{animation:none}
+    .ph.anim{transition:none}
+    .cand,.cand .stamp,.lcd,.blk{animation:none !important;transition:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ INICIO ============ -->
+<section id="title">
+  <div class="logo" aria-label="Línea Directa">
+    <span class="w1">Línea</span>
+    <svg class="heart" viewBox="0 0 38 34" aria-hidden="true"><path d="M19 31C8 22 3 17 3 10.5 3 5.5 7 2.5 11 2.5c3.5 0 6 2 8 5 2-3 4.5-5 8-5 4 0 8 3 8 8C35 17 30 22 19 31z" fill="#FF2E9A" stroke="#A9507E" stroke-width="3.5" stroke-linejoin="round"/></svg>
+    <span class="w2">Directa</span>
+  </div>
+  <div class="fan-stage">
+    <div class="fan" id="fan" aria-hidden="true"></div>
+    <div class="title-phone" id="titleStage" aria-hidden="true"></div>
+    <div class="callerid" aria-hidden="true"><small>☎ INCOMING CALL</small><b>CALLER ID: ???</b></div>
+  </div>
+  <p class="tagline">Guess who’s going to screw up your life.<br>Your next bad decision is just one call away.</p>
+  <nav class="menu" id="menu" aria-label="Menu">
+    <button class="mi sel" id="startBtn">ANSWER THE HOTLINE</button>
+    <button class="mi" id="tHelp">HOW TO PLAY</button>
+    <button class="mi" id="tSound" aria-pressed="false">SOUND: ON</button>
+  </nav>
+  <p class="press" aria-hidden="true">▶ PRESS START ◀</p>
+  <p class="hint">A telephone dating game · 1995 · or pick up the receiver</p>
+</section>
+
+<!-- ============ JUEGO ============ -->
+<div id="app" hidden>
+<section id="game">
+  <div class="layout">
+    <div class="col">
+      <div class="win phonewin mint">
+        <div class="bar"><span class="t">♥ LÍNEA DIRECTA.EXE</span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="pad phone-row">
+          <div class="dock" id="stage"></div>
+          <div class="side">
+            <div class="lcd" id="screen"><small id="nowWho">HOTLINE</small><div class="say" id="nowSay"></div></div>
+            <div class="callpad">
+              <button class="heartbtn" id="bCall"></button>
+              <button class="heartbtn small" id="bDel"></button>
+              <button class="heartbtn" id="bHang"></button>
+            </div>
+            <div class="actions">
+              <button class="btn y" id="bHot"></button>
+              <button class="btn sq" id="bMute" aria-label="Sound on" aria-pressed="false">♪ ON</button>
+              <button class="btn sq" id="bHelp" aria-label="How to play">?</button>
+            </div>
+          </div>
+        </div>
+        <div class="status">
+          <span class="live" id="crtState">ON HOOK</span>
+          <span id="crtCase">CASE 01/08</span>
+          <span id="crtDial">LINE 1</span>
+        </div>
+        <p class="sr" aria-live="polite" id="live"></p>
+      </div>
+
+      <div class="win sky">
+        <div class="bar"><span class="t">♪ CLUES.TXT</span><span class="dots"><i></i><i></i><i></i></span></div>
+        <div class="pad"><ol class="list" id="history" aria-label="Clues for this case"></ol></div>
+      </div>
+    </div>
+
+    <div class="win lav">
+      <div class="bar"><span class="t" id="lineupT">✿ THE LINEUP · TAP A FACE TO CROSS THEM OUT</span><span class="dots"><i></i><i></i><i></i></span></div>
+      <div class="pad"><div class="board" id="board"></div></div>
+      <p class="foot">♥ GET A CLUE: CALL THE HOTLINE · CALL ANYONE TO HEAR THEM OUT · FOUND THE RED FLAG? BLOCK THEM. BLOCK THE WRONG ONE AND IT’S GAME OVER · KEYS: 0–9 DIAL · ENTER CALL · ← DELETE · ESC HANG UP</p>
+      <div class="status" aria-live="polite">
+        <span class="live">FOUND <b id="hFound">0/8</b></span>
+        <span>CLUES <b id="hClues">0</b></span>
+        <span>CALLS <b id="hCalls">0</b></span>
+        <span><button class="btn mini" id="bRestart">NEW GAME</button></span>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- ============ VENTANA ============ -->
+<div class="modal" id="modal" hidden>
+  <div class="win" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="bar"><span class="t" id="mBar">✦ LÍNEA DIRECTA</span><span class="dots"><i></i><i></i><i></i></span></div>
+    <div class="pad" id="mBody"></div>
+  </div>
+</div>
+
+<script src="phone.js"></script>
+<script src="candidates.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

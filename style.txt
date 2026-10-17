@@ -1,0 +1,158 @@
+---
+name: linea-directa
+description: Aplica el sistema visual retro pastel de Línea Directa al implementar, modificar o revisar interfaces, estilos e ilustraciones de producto. Úsala para mantener su paleta, sus alias y el trazo común de 3 px sin duplicar tokens.
+---
+
+# Línea Directa · Paleta y trazos
+
+Implementa el sistema visual de Línea Directa respetando sus tokens y sus usos semánticos.
+
+Fuente: manual de variables locales «Línea Directa», modo Pastel.
+
+## Alcance
+
+Esta referencia define:
+- 20 colores distintos.
+- 1 alias de color.
+- 1 grosor común de trazo: 3 px.
+- Excepciones específicas para documentación.
+- Conservación de imágenes ráster.
+
+No define tipografías, escalas de espaciado, radios, dimensiones de componentes ni parámetros completos de sombra. Conserva los existentes en el proyecto y no presentes decisiones nuevas como reglas del sistema.
+
+## Flujo de trabajo
+
+1. Inspecciona la implementación existente: tokens, estilos globales, componentes y recursos.
+2. Identifica los tokens equivalentes antes de crear otros.
+3. Reutiliza la arquitectura y las convenciones del proyecto.
+4. Aplica los colores según su función, no solo por semejanza visual.
+5. Mantén los alias como referencias y los trazos vinculados al token común.
+6. Limita los cambios al alcance solicitado.
+7. Revisa el resultado y ejecuta las comprobaciones disponibles.
+8. Resume los cambios y cualquier desviación o comprobación pendiente.
+
+Si el proyecto contiene valores que contradicen esta referencia, señala la discrepancia. No hagas una migración global sin autorización.
+
+## Paleta canónica
+
+Los nombres son identificadores exactos. Los HEX representan sus valores de referencia, no colores adicionales que deban repetirse en los componentes.
+
+| Token | HEX | Uso |
+| --- | --- | --- |
+| `phone/fuchsia` | `#FF2E9A` | Cuerpo del teléfono |
+| `phone/ink` | `#2A0F45` | Rellenos y detalles |
+| `phone/yellow` | `#FFE14D` | Pantalla y siluetas |
+| `line` | `#A9507E` | Contornos de producto |
+| `text` | `#7A3A60` | Texto de contenido |
+| `cream` | `#FFFBF4` | Superficies y brillos |
+| `blush` | `#FFD1E4` | Fondo y callpad |
+| `pink` | `#FFB3D1` | Barras y cartas |
+| `mint` | `#C3F0DF` | Tinte de ventana |
+| `sky` | `#C9E2FF` | Tinte de ventana |
+| `lav` | `#DCCBFF` | Tinte y estado activo |
+| `butter` | `#FFF0B3` | Tinte y botón principal |
+| `peri` | `#7B86E6` | Texto de pantalla |
+| `screen` | `#F1F0FF` | Superficie LCD |
+| `shadow` | `#F5A9C9` | Sombras de desplazamiento |
+| `green` | `#8ADB93` | Acción de llamar |
+| `red` | `#FF7FA3` | Acción de colgar |
+| `yellow-dot` | `#FFE58A` | Indicador de ventana |
+| `background/canvas` | `#FFFFFF` | Documentación y retícula |
+| `border/section` | `#000000` | Borde de sección, aplicado al 10% de opacidad |
+
+### Alias obligatorio
+
+`phone/paper` → `cream`
+
+- Resuelve a `#FFFBF4` mediante una referencia a `cream`.
+- No lo conviertas en un valor independiente.
+- No lo cuentes como un color número 21.
+- Un cambio de `cream` debe propagarse al alias.
+
+## Trazos
+
+Token: `stroke/default`  
+Tipo de origen: `FLOAT`  
+Valor: `3`  
+Representación visual: `3 px`
+
+Reglas:
+- Usa `line` en contornos, iconos y divisores de producto.
+- Usa `cream` para los brillos.
+- Reserva `phone/ink` para rellenos y detalles de tinta oscura; no lo uses como sustituto del contorno común.
+- Reutiliza `stroke/default` en lugar de repetir el grosor en cada componente.
+- No introduzcas grosores alternativos para el producto sin una indicación explícita.
+
+## Vincular, no duplicar
+
+### En una implementación web
+
+- Centraliza los valores en la capa de tokens del proyecto.
+- Consume referencias desde componentes y estilos.
+- No distribuyas HEX o valores RGB literales por la interfaz.
+- Si ya existen tokens equivalentes, reutilízalos en vez de crear una segunda paleta.
+- Conserva los alias como referencias reales.
+
+Si no existe una convención de nombres, utiliza propiedades CSS con prefijo `--ld-` y sustituye `/` por `-`:
+
+- `phone/fuchsia` → `--ld-phone-fuchsia`
+- `background/canvas` → `--ld-background-canvas`
+- `border/section` → `--ld-border-section`
+- `stroke/default` → `--ld-stroke-default`
+
+Representa el grosor CSS como `3px` y el alias como:
+
+    --ld-phone-paper: var(--ld-cream);
+
+Para SVG, utiliza los mismos tokens en `fill`, `stroke` y `stroke-width`. Respeta las unidades y transformaciones de su sistema de coordenadas para mantener el grosor visual previsto.
+
+### Si trabajas con Figma
+
+- Aplica las variables locales a rellenos y trazos.
+- Vincula el grosor a `stroke/default`.
+- Conserva `phone/paper` como alias de `cream`.
+- No sustituyas vínculos por valores literales equivalentes.
+
+## Excepciones de documentación
+
+- `background/canvas` es el blanco del fondo y la retícula de documentación. No lo conviertas automáticamente en el fondo de todas las superficies de producto.
+- `border/section` es negro al 10% de opacidad y se utiliza únicamente en bordes de sección de documentación.
+- Aplica esa opacidad al borde, no al contenedor completo ni a su contenido.
+- No uses `border/section` en contornos de producto: estos corresponden a `line`.
+- La referencia no especifica un grosor propio para el borde técnico de documentación. No lo inventes como parte del sistema.
+
+## Imágenes ráster
+
+Conserva las imágenes existentes intactas.
+
+Salvo petición explícita:
+- No las recolorees.
+- No les apliques filtros para forzar la paleta.
+- No las traces ni las conviertas en elementos editables.
+- No las reemplaces por recreaciones.
+
+La aplicación de tokens se realiza sobre los elementos editables, no sobre los píxeles de las imágenes.
+
+## Límites y decisiones no definidas
+
+- No deduzcas una escala tipográfica o un sistema de radios a partir de esta paleta.
+- El token `shadow` define el color, no el desplazamiento, desenfoque ni expansión de una sombra.
+- No inventes colores adicionales para estados sin indicarlo.
+- Mantén diferenciados `phone/yellow`, `butter` y `yellow-dot`, así como `text`, `line` y `phone/ink`.
+- Si un requisito de accesibilidad entra en conflicto con una combinación de colores, informa del problema y busca primero una solución dentro de la paleta. No cambies silenciosamente los valores canónicos.
+
+## Lista de comprobación
+
+Antes de terminar, verifica:
+
+- [ ] Se han conservado los 20 colores canónicos y sus funciones.
+- [ ] `phone/paper` referencia a `cream`.
+- [ ] Los componentes consumen tokens, no copias de sus valores.
+- [ ] Los trazos de producto utilizan `stroke/default`, equivalente a 3 px.
+- [ ] Los contornos de producto usan `line`.
+- [ ] Los brillos usan `cream`.
+- [ ] El negro al 10% se limita a bordes de sección de documentación.
+- [ ] Las imágenes ráster permanecen intactas.
+- [ ] No se han atribuido al sistema reglas que la referencia no define.
+- [ ] Se han revisado legibilidad, contraste y posibles desbordamientos.
+- [ ] Se han ejecutado las comprobaciones disponibles o indicado cuáles no pudieron realizarse.
