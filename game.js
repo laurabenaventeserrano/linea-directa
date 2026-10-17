@@ -16,6 +16,19 @@ const byId = id => PEOPLE.find(p=>p.id===id);
 const HOT = DATA.hotline;
 const bgOf = p => { const i=PEOPLE.indexOf(p); return PASTEL[(i+Math.floor(i/4)*2)%4]; };
 
+/* ---------------- Pantalla fija ----------------
+   En ordenador el juego mide 1440×960 y se escala para caber entero (ver .staged).
+   S es la escala: el teléfono la usa para seguir al ratón. */
+const STAGE={w:1440,h:960};
+let S=1;
+function fit(){
+  const on=innerWidth>=1024&&innerHeight>=620;
+  document.documentElement.classList.toggle('staged',on);
+  S=on?Math.min(innerWidth/STAGE.w,innerHeight/STAGE.h):1;
+  document.documentElement.style.setProperty('--s',S);
+}
+addEventListener('resize',fit); fit();
+
 /* ---------------- Icons (los corazones del estilo aprobado) ---------------- */
 const HEART='M30 50C13 37 4 29 4 18 4 10 10 4 18 4c5 0 9 3 12 7 3-4 7-7 12-7 8 0 14 6 14 14 0 11-9 19-26 32z';
 const heart=(fill,inner)=>`<svg viewBox="0 0 60 54" aria-hidden="true"><path d="${HEART}" fill="${fill}" stroke="${C.line}" stroke-width="3.5" stroke-linejoin="round"/>${inner}</svg>`;
@@ -25,7 +38,8 @@ const I = {
   hang:heart(C.red,`<path d="M16 25c4-4 9-6 14-6s10 2 14 6l-1 4-6-1v-3c-4-1-10-1-14 0v3l-6 1z" fill="${C.cream}" stroke="${C.line}" stroke-width="2" stroke-linejoin="round"/>`),
   flag:`<svg viewBox="0 0 28 28" aria-hidden="true"><path d="M6 3v23" stroke="${C.line}" stroke-width="3" stroke-linecap="round"/><path d="M7 4h16l-4 5 4 5H7z" fill="${C.red}" stroke="${C.line}" stroke-width="2.5" stroke-linejoin="round"/></svg>`,
   x:`<svg viewBox="0 0 24 24" preserveAspectRatio="none" aria-hidden="true"><path d="M2 2l20 20M22 2L2 22" stroke="${C.line}" stroke-width="2.4" stroke-linecap="round"/></svg>`,
-  hearts:(n)=>[1,2,3,4,5].map(i=>`<svg viewBox="0 0 60 54"><path d="${HEART}" fill="${i<=n?C.red:C.cream}" stroke="${C.line}" stroke-width="5" stroke-linejoin="round"/></svg>`).join('')
+  hearts:(n)=>I.meter(5,n),
+  meter:(total,n)=>Array.from({length:total},(_,i)=>`<svg viewBox="0 0 60 54"><path d="${HEART}" fill="${i<n?C.red:C.cream}" stroke="${C.line}" stroke-width="5" stroke-linejoin="round"/></svg>`).join('')
 };
 
 /* ---------------- Hover tags ----------------
@@ -99,20 +113,20 @@ function Phone(host, opts){
     const key=e.target.closest('.k');
     const r=ph.getBoundingClientRect();
     drag={id:e.pointerId,sx:e.clientX,sy:e.clientY,ox:pos.x,oy:pos.y,moved:false,key:key&&key.dataset.k,
-          home:{l:r.left-pos.x,t:r.top-pos.y,r:r.right-pos.x,b:r.bottom-pos.y}};
+          home:{l:r.left-pos.x*S,t:r.top-pos.y*S,r:r.right-pos.x*S,b:r.bottom-pos.y*S}};
     try{ph.setPointerCapture(e.pointerId)}catch(_){}
     opts.onGrab&&opts.onGrab();
     e.preventDefault();
   });
   ph.addEventListener('pointermove',e=>{
     if(!drag||e.pointerId!==drag.id) return;
-    const dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
-    if(!drag.moved&&Math.hypot(dx,dy)<7) return;
+    const dx=(e.clientX-drag.sx)/S, dy=(e.clientY-drag.sy)/S;
+    if(!drag.moved&&Math.hypot(dx,dy)*S<7) return;
     if(!drag.moved){ drag.moved=true; ph.classList.add('drag'); ph.classList.remove('anim'); opts.onLift&&opts.onLift(); }
     // límites: que no se salga de la pantalla
     const h=drag.home;
-    pos.x=Math.max(4-h.l,Math.min(innerWidth-4-h.r,drag.ox+dx));
-    pos.y=Math.max(4-h.t,Math.min(Math.max(20,innerHeight-4-h.b),drag.oy+dy));
+    pos.x=Math.max((4-h.l)/S,Math.min((innerWidth-4-h.r)/S,drag.ox+dx));
+    pos.y=Math.max((4-h.t)/S,Math.min(Math.max(20,(innerHeight-4-h.b)/S),drag.oy+dy));
     pos.r=Math.max(-14,Math.min(14,(e.movementX||0)*.8));
     place(false);
   });
@@ -268,6 +282,9 @@ function updateBoard(){
     bk.dataset.tip=off?'':armedHere?'WRONG ONE = GAME OVER':`BLOCK ${p.name.toUpperCase()}`;
   });
   $('hFound').textContent=`${G.blocked.length}/${PEOPLE.length}`;
+  $('hMeter').innerHTML=I.meter(PEOPLE.length,G.blocked.length);
+  $('hLife').innerHTML=I.meter(1,G.over?0:1);
+  nextStep();
   $('hClues').textContent=G.clues;
   $('hCalls').textContent=G.calls;
   refreshTip();
@@ -314,7 +331,7 @@ function renderHistory(){
   h.scrollTop=1e6;
 }
 function crtState(t,red){ const s=$('crtState'); s.textContent=t; s.classList.toggle('red',!!red); }
-function crtCase(){ $('crtCase').textContent=`CASE ${String(G.blocked.length+1).padStart(2,'0')}/${String(PEOPLE.length).padStart(2,'0')}`; }
+function crtCase(){ $('hCase').textContent=`CASE ${String(G.blocked.length+1).padStart(2,'0')}/${String(PEOPLE.length).padStart(2,'0')}`; }
 function glitch(){ const s=$('screen'); s.classList.remove('glitch'); void s.offsetWidth; s.classList.add('glitch'); }
 
 /* ---------------- The line ---------------- */
@@ -327,10 +344,25 @@ const HOT_NUM=digits(HOT.number);
 const numLen=()=>HOT_NUM.length;
 const formatDial=d=>d.length>3?d.slice(0,3)+'-'+d.slice(3):d;
 const personByNum=n=>PEOPLE.find(p=>digits(p.phone)===n);
+function nextStep(){ // qué hacer ahora, en una línea, debajo de la pantalla
+  let t='';
+  if(G&&R&&!G.over){
+    const open=left().filter(p=>!R.crossed.has(p.id)).length;
+    if(L.mode==='incoming') t='▶ PICK UP THE PHONE';
+    else if(L.mode==='ringing') t='RINGING…';
+    else if(L.mode==='tone'&&L.dial) t=L.dial.length<numLen()?'▶ KEEP DIALLING':'▶ PRESS CALL';
+    else if(open===1&&R.given.length) t='▶ ONE LEFT? BLOCK THEM';
+    else if(!L.offHook) t='▶ PICK UP OR PRESS HOTLINE';
+    else if(L.mode==='tone') t=R.given.length?'▶ CROSS OUT WHO DOESN’T FIT · CALL FOR MORE':'▶ PRESS CALL FOR A CLUE';
+    else if(R.given.length) t='▶ CROSS OUT WHO DOESN’T FIT';
+  }
+  $('nowNext').textContent=t;
+}
 function setButtons(){
   $('bCall').classList.toggle('glow',(L.mode==='tone'&&L.dial.length===numLen())||L.mode==='incoming');
   $('bCall').querySelector('span').textContent=L.mode==='incoming'?'ANSWER':'CALL';
   $('bCall').dataset.tip=L.mode==='incoming'?'ANSWER':L.dial?'CALL '+formatDial(L.dial):'CALL THE HOTLINE';
+  nextStep();
 }
 function showDial(){
   P.screen(L.dial?formatDial(L.dial):(L.mode==='tone'?'_':'555-FLAG'));
@@ -477,8 +509,16 @@ function beginCase(answered){
   clearTimers(); Sound.dialStop();
   L.offHook=false; L.mode='idle'; L.dial=''; L.with=null; P.hook();
   newCase(); renderHistory(); crtCase(); glitch(); updateBoard(); showDial();
+  banner(`CASE ${String(G.blocked.length+1).padStart(2,'0')}`);
   if(answered){ answerIncoming(); return; }
   later(startRinging,reduced()?0:500);
+}
+
+let bannerT=0;
+function banner(t){ // el letrero grande de cada caso, como el «ROUND 1» de una recreativa
+  const b=$('banner'); $('bannerT').textContent=t;
+  b.hidden=false; b.classList.remove('go'); void b.offsetWidth; b.classList.add('go');
+  clearTimeout(bannerT); bannerT=setTimeout(()=>{ b.hidden=true; },1600);
 }
 
 /* ---------------- Dialogs ---------------- */
@@ -546,6 +586,7 @@ function showHelp(){
       <li>Call anyone in the lineup to hear them out. Tap their number.</li>
       <li>Think you know? BLOCK them. Get it right and they’re gone for good. Block the wrong one and it’s game over.</li>
       <li>To hang up, press HANG UP or put the phone back on its base.</li>
+      <li>Keys: 0–9 dial · Enter call · ← delete · Esc hang up.</li>
     </ol>
     <button class="btn y" data-go>GOT IT ▶</button>`);
 }

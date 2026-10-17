@@ -89,8 +89,7 @@
   .title-phone.held .phone{animation:none}
   .title-phone.ring .phone{animation:ring .12s linear infinite}
   @keyframes wiggle{0%,70%,100%{transform:rotate(0)}74%{transform:rotate(-4deg)}78%{transform:rotate(4deg)}82%{transform:rotate(-3deg)}86%{transform:rotate(2deg)}}
-  .hint{font-size:11px;color:var(--text);max-width:340px;line-height:1.5;background:var(--cream);border:2px solid var(--line);border-radius:8px;padding:5px 10px}
-  .tagline{font-size:clamp(12px, 3.4vw, 15px);font-weight:700;color:var(--line);max-width:420px;line-height:1.4}
+  .tagline{font-size:clamp(12px, 3.4vw, 15px);font-weight:700;color:var(--line);max-width:460px;line-height:1.4;text-wrap:balance}
 
   /* La portada: las cartas en abanico detrás del teléfono, como una mano de cartas */
   #title{gap:14px;padding-bottom:12px;overflow:hidden}
@@ -103,7 +102,7 @@
   }
   .fan .fcard .name{font-size:12px;padding:2px 5px 3px}
   .fan .fcard .name small{display:none}
-  .fan .fcard .cand-top .no{font-size:7px;padding:1px 3px}
+  .fan .fcard .cand-top .no{font-size:8px;padding:1px 3px}
   .fan .fcard .tel{font-size:15px;padding:1px 4px 2px;box-shadow:none}
   @keyframes deal{from{transform:rotate(0deg) translateY(30px);opacity:0}}
   .fan-stage .title-phone{z-index:3;width:min(200px, 46vw)}
@@ -208,6 +207,7 @@
   .lcd .say{font-family:var(--lcd);font-size:27px;line-height:1}
   .lcd .say b{font-weight:400;color:var(--line)}
   .lcd .say.red{color:var(--line)}
+  .lcd .next{font-weight:700;margin-top:4px}
   .lcd .say .cur{display:inline-block;width:.45em;background:var(--peri);color:transparent;animation:blink 1s steps(1) infinite}
   @keyframes blink{50%{opacity:0}}
   .lcd.glitch{animation:flash .45s steps(2) 1}
@@ -251,7 +251,7 @@
   .heartbtn.glow svg{animation:pulse .7s ease-in-out infinite}
   @keyframes pulse{50%{transform:scale(1.1)}}
   .heartbtn[disabled]{opacity:.45;cursor:var(--cur-arrow)}
-  .actions{display:grid;grid-template-columns:1fr auto auto;gap:10px}
+  .actions{display:grid;grid-template-columns:1fr;gap:10px}
   .actions .btn{min-width:44px;white-space:nowrap}
 
   /* Pistas (como la lista del reproductor) */
@@ -280,6 +280,7 @@
     position:relative;display:flex;flex-direction:column;gap:6px;min-width:0;
     background-color:var(--pink);
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M11 9c-2-3-7-2-7 2 0 3 4 5 7 8 3-3 7-5 7-8 0-4-5-5-7-2z' fill='%23FFFBF4' stroke='%23A9507E' stroke-width='1.4'/%3E%3Ctext x='24' y='38' font-family='monospace' font-size='9' font-weight='bold' fill='%23A9507E'%3E555%3C/text%3E%3C/svg%3E");
+    background-repeat:space;
     border:3px solid var(--line);border-radius:12px;
     box-shadow:4px 4px 0 var(--line);
     padding:7px;transition:transform .12s, box-shadow .12s;
@@ -308,7 +309,7 @@
   }
   .chips{list-style:none;display:flex;flex-direction:column;gap:3px;background:var(--cream);border:2px solid var(--line);border-radius:8px;padding:4px}
   .chip{display:flex;align-items:center;gap:5px;min-width:0}
-  .chip b{flex:none;width:44px;text-align:center;font-size:7px;font-weight:700;color:var(--line);border:2px solid var(--line);border-radius:4px;padding:2px 0 1px}
+  .chip b{flex:none;width:46px;text-align:center;font-size:8px;font-weight:700;color:var(--line);border:2px solid var(--line);border-radius:4px;padding:2px 0 1px}
   .chip span{font-family:var(--lcd);font-size:17px;line-height:.9;color:var(--text);min-width:0;overflow-wrap:anywhere}
   .chip.texts b{background:var(--t-texts)}
   .chip.plans b{background:var(--t-plans)}
@@ -322,7 +323,7 @@
     background:var(--screen);border:2px solid var(--line);border-radius:6px;padding:2px 6px 3px;
     box-shadow:2px 2px 0 var(--line);transition:transform .05s;margin-top:auto;
   }
-  .tel small{font-family:var(--px);font-size:7px;color:var(--line)}
+  .tel small{font-family:var(--px);font-size:8px;color:var(--line)}
   .tel:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--line)}
   /* Bloquear: el botón de adivinar. Si es el que no es, se acaba la partida. */
   .blk{
@@ -401,6 +402,51 @@
   .score{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
   .score span{font-size:10px;font-weight:700;color:var(--line);background:var(--butter);border:2px solid var(--line);border-radius:8px;padding:5px 8px}
 
+  /* ---------- Marcador (HUD) ---------- */
+  .hud{
+    display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:20px;
+    background:var(--cream);border:3px solid var(--line);border-radius:16px;
+    box-shadow:6px 6px 0 var(--shadow);padding:8px 12px;
+  }
+  .hud .case{font-family:var(--logo);font-size:22px;line-height:1;color:var(--text);background:var(--butter);border:3px solid var(--line);border-radius:8px;padding:3px 10px 5px;box-shadow:3px 3px 0 var(--line);transform:rotate(-2deg)}
+  .hud .cell{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--line)}
+  .hud .cell b{font-family:var(--lcd);font-weight:400;font-size:24px;line-height:1;color:var(--peri);background:var(--screen);border:2px solid var(--line);border-radius:6px;padding:0 6px}
+  .hud .meter{display:flex;gap:2px}
+  .hud .meter svg{width:16px;height:15px;display:block}
+  .hud .tools{margin-left:auto;display:flex;gap:8px}
+  .hud .btn{padding:6px 10px;font-size:11px}
+
+  /* ---------- Letrero de caso ---------- */
+  .banner{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;pointer-events:none}
+  .banner .b1{font-family:var(--logo);font-size:clamp(40px, 10vw, 64px);line-height:1;color:var(--text);background:var(--butter);border:4px solid var(--line);border-radius:16px;padding:6px 18px 10px;box-shadow:6px 6px 0 var(--shadow), 6px 6px 0 4px var(--line);transform:rotate(-3deg)}
+  .banner .b2{font-size:12px;font-weight:700;color:var(--line);background:var(--screen);border:3px solid var(--line);border-radius:8px;padding:4px 10px 3px;box-shadow:3px 3px 0 var(--line);transform:rotate(2deg)}
+  .banner.go{animation:banner 1.6s cubic-bezier(.2,1.4,.4,1) both}
+  @keyframes banner{0%{opacity:0;transform:scale(.6)}15%{opacity:1;transform:scale(1.06)}25%{transform:scale(1)}80%{opacity:1;transform:scale(1)}100%{opacity:0;transform:translateY(-14px)}}
+
+  /* ---------- Pantalla fija ----------
+     En ordenador el juego es una pantalla de 1440×960 que se escala para caber
+     entera, como en una consola. Sin bajar con la rueda. */
+  .staged body{overflow:hidden}
+  .staged #app{position:fixed;inset:0;overflow:hidden}
+  .staged #game{
+    position:absolute;left:50%;top:50%;width:1440px;height:960px;max-width:none;margin:0;padding:16px 22px 22px 16px;
+    display:flex;flex-direction:column;gap:14px;
+    transform:translate(-50%,-50%) scale(var(--s));
+  }
+  .staged .hud{margin:0}
+  .staged .layout{flex:1;min-height:0;grid-template-columns:340px 1fr;grid-template-rows:100%}
+  .staged .col{min-height:0}
+  .staged .col > .win.sky{flex:1;min-height:0;display:flex;flex-direction:column}
+  .staged .win.sky .pad{flex:1;min-height:0;display:flex}
+  .staged .list{flex:1;max-height:none}
+  .staged .layout > .win.lav{height:100%;display:flex;flex-direction:column}
+  .staged .win.lav .pad{flex:1;min-height:0;overflow:auto}
+  .staged .board{grid-template-columns:repeat(6, minmax(0,1fr));gap:16px 12px}
+  .staged .dock{height:290px}
+  .staged .ph{width:110px;margin-left:-55px;bottom:26px}
+  .staged .dock .base{width:170px}
+  .staged .chip b{width:40px}
+
   @media (max-width:1100px){ .board{grid-template-columns:repeat(3, minmax(0,1fr))} }
   @media (max-width:900px){ .board{grid-template-columns:repeat(2, minmax(0,1fr))} }
   @media (max-width:760px){
@@ -431,6 +477,7 @@
     .ph.ring svg,.heartbtn.glow svg,.btn.glow{animation:none}
     .ph.anim{transition:none}
     .cand,.cand .stamp,.lcd,.blk{animation:none !important;transition:none}
+    .banner.go{animation:none}
   }
 </style>
 </head>
@@ -455,12 +502,23 @@
     <button class="mi" id="tSound" aria-pressed="false">SOUND: ON</button>
   </nav>
   <p class="press" aria-hidden="true">▶ PRESS START ◀</p>
-  <p class="hint">A telephone dating game · 1995 · or pick up the receiver</p>
 </section>
 
 <!-- ============ JUEGO ============ -->
 <div id="app" hidden>
 <section id="game">
+  <header class="hud" aria-live="polite">
+    <span class="case" id="hCase">CASE 01/11</span>
+    <span class="cell">FOUND <span class="meter" id="hMeter" aria-hidden="true"></span><b id="hFound">0/11</b></span>
+    <span class="cell">LIFE <span class="meter" id="hLife" aria-hidden="true"></span></span>
+    <span class="cell">CLUES <b id="hClues">0</b></span>
+    <span class="cell">CALLS <b id="hCalls">0</b></span>
+    <span class="tools">
+      <button class="btn" id="bMute" aria-label="Sound on" aria-pressed="false">♪ ON</button>
+      <button class="btn" id="bHelp" aria-label="How to play">?</button>
+      <button class="btn y" id="bRestart">NEW GAME</button>
+    </span>
+  </header>
   <div class="layout">
     <div class="col">
       <div class="win phonewin mint">
@@ -468,7 +526,7 @@
         <div class="pad phone-row">
           <div class="dock" id="stage"></div>
           <div class="side">
-            <div class="lcd" id="screen"><small id="nowWho">HOTLINE</small><div class="say" id="nowSay"></div></div>
+            <div class="lcd" id="screen"><small id="nowWho">HOTLINE</small><div class="say" id="nowSay"></div><small class="next" id="nowNext"></small></div>
             <div class="callpad">
               <button class="heartbtn" id="bCall"></button>
               <button class="heartbtn small" id="bDel"></button>
@@ -476,14 +534,11 @@
             </div>
             <div class="actions">
               <button class="btn y" id="bHot"></button>
-              <button class="btn sq" id="bMute" aria-label="Sound on" aria-pressed="false">♪ ON</button>
-              <button class="btn sq" id="bHelp" aria-label="How to play">?</button>
             </div>
           </div>
         </div>
         <div class="status">
           <span class="live" id="crtState">ON HOOK</span>
-          <span id="crtCase">CASE 01/08</span>
           <span id="crtDial">LINE 1</span>
         </div>
         <p class="sr" aria-live="polite" id="live"></p>
@@ -496,19 +551,14 @@
     </div>
 
     <div class="win lav">
-      <div class="bar"><span class="t" id="lineupT">✿ THE LINEUP · TAP A FACE TO CROSS THEM OUT</span><span class="dots"><i></i><i></i><i></i></span></div>
+      <div class="bar"><span class="t" id="lineupT">✿ THE LINEUP</span><span class="dots"><i></i><i></i><i></i></span></div>
       <div class="pad"><div class="board" id="board"></div></div>
-      <p class="foot">♥ GET A CLUE: CALL THE HOTLINE · CALL ANYONE TO HEAR THEM OUT · FOUND THE RED FLAG? BLOCK THEM. BLOCK THE WRONG ONE AND IT’S GAME OVER · KEYS: 0–9 DIAL · ENTER CALL · ← DELETE · ESC HANG UP</p>
-      <div class="status" aria-live="polite">
-        <span class="live">FOUND <b id="hFound">0/8</b></span>
-        <span>CLUES <b id="hClues">0</b></span>
-        <span>CALLS <b id="hCalls">0</b></span>
-        <span><button class="btn mini" id="bRestart">NEW GAME</button></span>
-      </div>
     </div>
   </div>
 </section>
 </div>
+
+<div class="banner" id="banner" hidden aria-hidden="true"><span class="b1" id="bannerT">CASE 01</span><span class="b2">☎ INCOMING CALL</span></div>
 
 <!-- ============ VENTANA ============ -->
 <div class="modal" id="modal" hidden>
