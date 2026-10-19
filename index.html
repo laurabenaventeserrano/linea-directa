@@ -92,27 +92,20 @@
   .tagline{font-size:clamp(14px, 3.8vw, 18px);font-weight:700;color:var(--line);max-width:560px;line-height:1.5;text-wrap:balance}
   .tagline b{font-family:var(--logo);font-weight:400;font-size:1.6em;color:var(--text)}
 
-  /* La portada: las cartas en abanico detrás del teléfono, como una mano de cartas */
+  /* La portada: el tablero del juego de mesa */
   #title{gap:14px;padding-bottom:12px;overflow:hidden}
-  .fan-stage{position:relative;width:min(780px, 100%);height:360px;display:flex;justify-content:center;align-items:flex-end}
-  .fan{position:absolute;left:50%;bottom:70px;width:0;height:0}
-  .fan .fcard{
-    position:absolute;left:-50px;bottom:0;width:100px;padding:5px;gap:4px;
-    transform-origin:50% 330%;transform:rotate(calc(var(--i) * 8deg));
-    animation:deal .7s cubic-bezier(.2,1.3,.4,1) both;animation-delay:calc((var(--i) + 6) * 40ms);
-  }
-  .fan .fcard .name{font-size:12px;padding:2px 5px 3px}
-  .fan .fcard .name small{display:none}
-  .fan .fcard .cand-top .no{font-size:8px;padding:1px 3px}
-  .fan .fcard .tel{font-size:15px;padding:1px 4px 2px;box-shadow:none}
-  @keyframes deal{from{transform:rotate(0deg) translateY(30px);opacity:0}}
-  .fan-stage .title-phone{z-index:3;width:min(200px, 46vw)}
+  .tb{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
+  .tb .zones,.tb .zlabels,.tb .ring,.tb .scatter{display:none}
+  .tb-phone{position:relative;order:2}
+  .sheet{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(500px, 100%)}
+  .sheet .logo span{font-size:clamp(40px, 11vw, 54px)}
   .callerid{
-    position:absolute;z-index:4;left:calc(50% + 62px);top:26px;transform:rotate(4deg);
+    position:absolute;z-index:4;left:150px;top:-6px;transform:rotate(4deg);
     display:flex;flex-direction:column;gap:1px;text-align:left;
     background:var(--screen);border:3px solid var(--line);border-radius:12px;
     box-shadow:inset 0 0 0 3px var(--lav), 4px 4px 0 var(--line);padding:6px 11px 5px;
   }
+  .callerid{white-space:nowrap}
   .callerid small{font-size:8px;font-weight:700;color:var(--line)}
   .callerid b{font-family:var(--lcd);font-weight:400;font-size:21px;line-height:1;color:var(--peri)}
   /* El menú del juego, con el corazón como selector */
@@ -135,14 +128,7 @@
   .mi:focus-visible{outline:3px solid var(--peri);outline-offset:2px}
   .press{font-size:12px;font-weight:700;color:var(--line);animation:blink 1s steps(1) infinite}
   @media (max-width:560px){
-    .fan-stage{height:270px}
-    .fan{bottom:56px}
-    .fan-stage .title-phone{width:min(150px, 40vw)}
-    .fan .fcard{left:-29px;width:58px;padding:3px;gap:3px;transform-origin:50% 300%;transform:rotate(calc(var(--i) * 8deg))}
-    .fan .fcard .cand-top .no{display:none}
-    .fan .fcard .name{font-size:10px}
-    .fan .fcard .tel{font-size:12px}
-    .callerid{left:auto;right:4px;top:4px}
+    .callerid{left:auto;right:-30px;top:-6px}
     .callerid b{font-size:17px}
   }
 
@@ -441,7 +427,38 @@
     position:fixed;left:50%;top:50%;width:1440px;height:960px;min-height:0;padding:16px;
     transform:translate(-50%,-50%) scale(var(--s));
   }
-  .staged .tagline{margin-top:28px}
+  .staged #title{display:block;padding:0}
+  .staged .tb{
+    position:absolute;inset:18px 24px 24px 18px;width:auto;display:block;
+    background-color:var(--pink);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cg fill='none' stroke='%23A9507E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' opacity='.45'%3E%3Cpath d='M20 26c-3-4-10-3-10 3 0 4 5 7 10 11 5-4 10-7 10-11 0-6-7-7-10-3z'/%3E%3Cpath d='M66 66c0-3 4-3 4 0 0 5-8 5-8 0 0-8 12-8 12 0 0 11-16 11-16 0 0-14 20-14 20 0'/%3E%3C/g%3E%3C/svg%3E");
+    border:3px solid var(--line);border-radius:28px;box-shadow:6px 6px 0 var(--line);overflow:hidden;
+  }
+  .staged .tb .zones{display:block;position:absolute;inset:0;width:100%;height:100%}
+  .staged .tb .zlabels,.staged .tb .ring,.staged .tb .scatter{display:block;position:absolute;inset:0}
+  .zl{
+    position:absolute;transform:translate(-50%,-50%) rotate(var(--r));white-space:nowrap;
+    font-size:13px;font-weight:700;color:var(--line);background:var(--zb);
+    border:3px solid var(--line);border-radius:6px;padding:5px 10px 4px;box-shadow:3px 3px 0 var(--line);
+  }
+  .tk{position:absolute;width:84px;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-50%) rotate(var(--r));animation:drop .5s cubic-bezier(.2,1.3,.4,1) both;animation-delay:calc(var(--i) * 45ms)}
+  .tk .frame{border-width:3px;box-shadow:3px 3px 0 var(--line)}
+  .tk b{position:relative;z-index:1;margin-top:-5px;font-size:9px;font-weight:700;color:var(--line);background:var(--sky);border:2px solid var(--line);border-radius:6px;padding:2px 7px 1px}
+  .scard{position:absolute;width:118px;padding:6px;gap:5px;transform:translate(-50%,-50%) rotate(var(--r));animation:drop .55s cubic-bezier(.2,1.3,.4,1) both;animation-delay:calc(var(--i) * 70ms + 500ms)}
+  .scard .name{font-size:13px;padding:2px 5px 3px}
+  .scard .name small{display:none}
+  .scard .cand-top .no{font-size:8px;padding:1px 3px}
+  .scard .tel{font-size:17px;padding:1px 4px 2px}
+  @keyframes drop{from{opacity:0;scale:1.35}}
+  .staged .tb-phone{position:absolute;left:70px;top:150px;transform:rotate(-6deg);z-index:3}
+  .staged .tb-phone .title-phone{width:240px}
+  .staged .sheet{
+    position:absolute;left:50%;top:50%;z-index:4;width:500px;gap:12px;
+    transform:translate(-50%,-50%) rotate(-1deg);
+    background:var(--cream);border:3px solid var(--line);border-radius:10px;
+    box-shadow:6px 6px 0 var(--shadow), 6px 6px 0 3px var(--line);padding:22px 26px 18px;
+  }
+  .staged .sheet .menu{box-shadow:4px 4px 0 var(--shadow)}
   .staged .layout{flex:1;min-height:0;grid-template-columns:340px 1fr;grid-template-rows:100%}
   .staged .col{min-height:0}
   .staged .col > .win.sky{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -481,7 +498,7 @@
     .status span:nth-child(3){display:none}
   }
   @media (prefers-reduced-motion:reduce){
-    .title-phone .phone,.title-phone.ring .phone,.fcard,.mi.sel::before,.press{animation:none}
+    .title-phone .phone,.title-phone.ring .phone,.tk,.scard,.mi.sel::before,.press{animation:none}
     .ph.ring svg,.heartbtn.glow svg,.btn.glow{animation:none}
     .ph.anim{transition:none}
     .cand,.cand .stamp,.lcd,.blk{animation:none !important;transition:none}
@@ -493,23 +510,32 @@
 
 <!-- ============ INICIO ============ -->
 <section id="title">
-  <div class="logo" aria-label="Línea Directa">
-    <span class="w1">Línea</span>
-    <svg class="heart" viewBox="0 0 38 34" aria-hidden="true"><path d="M19 31C8 22 3 17 3 10.5 3 5.5 7 2.5 11 2.5c3.5 0 6 2 8 5 2-3 4.5-5 8-5 4 0 8 3 8 8C35 17 30 22 19 31z" fill="#FF2E9A" stroke="#A9507E" stroke-width="3.5" stroke-linejoin="round"/></svg>
-    <span class="w2">Directa</span>
+  <!-- La portada es el tablero del juego de mesa: zonas en el centro, las fichas de
+       los chicos alrededor, el teléfono a un lado, cartas sueltas y la hoja en medio. -->
+  <div class="tb">
+    <svg class="zones" id="zones" viewBox="0 0 1392 912" preserveAspectRatio="none" aria-hidden="true"></svg>
+    <div class="zlabels" id="zlabels" aria-hidden="true"></div>
+    <div class="ring" id="ring" aria-hidden="true"></div>
+    <div class="scatter" id="scatter" aria-hidden="true"></div>
+    <div class="tb-phone">
+      <div class="title-phone" id="titleStage" aria-hidden="true"></div>
+      <div class="callerid" aria-hidden="true"><small>☎ INCOMING CALL</small><b>CALLER ID: ???</b></div>
+    </div>
+    <div class="sheet">
+      <div class="logo" aria-label="Línea Directa">
+        <span class="w1">Línea</span>
+        <svg class="heart" viewBox="0 0 38 34" aria-hidden="true"><path d="M19 31C8 22 3 17 3 10.5 3 5.5 7 2.5 11 2.5c3.5 0 6 2 8 5 2-3 4.5-5 8-5 4 0 8 3 8 8C35 17 30 22 19 31z" fill="#FF2E9A" stroke="#A9507E" stroke-width="3.5" stroke-linejoin="round"/></svg>
+        <span class="w2">Directa</span>
+      </div>
+      <p class="tagline"><b>Guess who likes you.</b><br>Then block them.</p>
+      <nav class="menu" id="menu" aria-label="Menu">
+        <button class="mi sel" id="startBtn">ANSWER THE HOTLINE</button>
+        <button class="mi" id="tHelp">HOW TO PLAY</button>
+        <button class="mi" id="tSound" aria-pressed="false">SOUND: ON</button>
+      </nav>
+      <p class="press" aria-hidden="true">▶ PRESS START ◀</p>
+    </div>
   </div>
-  <div class="fan-stage">
-    <div class="fan" id="fan" aria-hidden="true"></div>
-    <div class="title-phone" id="titleStage" aria-hidden="true"></div>
-    <div class="callerid" aria-hidden="true"><small>☎ INCOMING CALL</small><b>CALLER ID: ???</b></div>
-  </div>
-  <p class="tagline"><b>Guess who likes you.</b><br>Then block them.</p>
-  <nav class="menu" id="menu" aria-label="Menu">
-    <button class="mi sel" id="startBtn">ANSWER THE HOTLINE</button>
-    <button class="mi" id="tHelp">HOW TO PLAY</button>
-    <button class="mi" id="tSound" aria-pressed="false">SOUND: ON</button>
-  </nav>
-  <p class="press" aria-hidden="true">▶ PRESS START ◀</p>
 </section>
 
 <!-- ============ JUEGO ============ -->

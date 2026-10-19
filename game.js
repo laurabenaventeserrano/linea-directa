@@ -659,12 +659,39 @@ let ringT=0;
 const titleRing=()=>{ Sound.ring(); ringT=setTimeout(titleRing,1300); };
 $('title').addEventListener('pointerdown',e=>{ if(!ringT&&!e.target.closest('#titleStage,.menu')){ Sound.unlock(); titleRing(); } },{once:true});
 
-// Portada: las cartas en abanico detrás del teléfono
+// Portada: el tablero. Cuatro zonas en el centro, las fichas de todos alrededor
+// (como en el juego de mesa) y unas cuantas cartas sueltas encima.
 {
-  const mid=(PEOPLE.length-1)/2;
-  $('fan').innerHTML=PEOPLE.map((p,i)=>`<div class="cand fcard" style="--bg:${bgOf(p)};--i:${i-mid}">${cardTop(p)}`+
-    `<div class="frame"><i class="strip"></i><span class="pic">${portrait(p)}</span><i class="strip"></i></div>`+
-    `<span class="tel"><span>${esc(p.phone)}</span></span></div>`).join('');
+  const W=1392, H=912, cx=W/2, cy=H/2;
+  const ZONES=[['THE CAFÉ','var(--mint)','var(--butter)'],['THE GYM','var(--sky)','var(--pink)'],
+               ['THE PARK','var(--butter)','var(--mint)'],['THE DISCO','var(--lav)','var(--butter)']];
+  const zr={x:520,y:340};
+  const pt=(deg,f=1)=>{ const a=deg*Math.PI/180; return [cx+zr.x*f*Math.cos(a), cy+zr.y*f*Math.sin(a)]; };
+  let svg='';
+  ZONES.forEach(([,fill],i)=>{ // cada zona es una porción de la elipse
+    const a0=i*90, a1=a0+90; let d=`M${cx} ${cy}`;
+    for(let k=0;k<=18;k++){ const [x,y]=pt(a0+(a1-a0)*k/18); d+=` L${x.toFixed(1)} ${y.toFixed(1)}`; }
+    svg+=`<path d="${d} Z" fill="${fill}" stroke="#A9507E" stroke-width="3" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
+  });
+  $('zones').innerHTML=svg;
+  $('zlabels').innerHTML=ZONES.map(([t,,bg],i)=>{ const [x,y]=pt(i*90+45,.86);
+    return `<span class="zl" style="left:${x/W*100}%;top:${y/H*100}%;--r:${[-6,5,-4,7][i]}deg;--zb:${bg}">${t}</span>`; }).join('');
+  // las fichas: en un óvalo alrededor de las zonas, mirando hacia fuera pero legibles
+  const rr={x:612,y:388};
+  $('ring').innerHTML=PEOPLE.map((p,i)=>{
+    const deg=90+i*360/PEOPLE.length, a=deg*Math.PI/180;
+    const x=cx+rr.x*Math.cos(a), y=cy+rr.y*Math.sin(a);
+    let r=Math.atan2(Math.sin(a)/rr.y,Math.cos(a)/rr.x)*180/Math.PI-90;
+    if(r<-180) r+=360; if(r>90) r-=180; if(r<-90) r+=180;
+    return `<div class="tk" style="left:${x/W*100}%;top:${y/H*100}%;--r:${(r*.35).toFixed(1)}deg;--i:${i};--bg:${bgOf(p)}">`+
+      `<div class="frame"><i class="strip"></i><span class="pic">${portrait(p)}</span><i class="strip"></i></div><b>${esc(p.name.toUpperCase())}</b></div>`;
+  }).join('');
+  // cartas sueltas sobre el tablero, como si alguien las hubiera dejado ahí
+  const SPOTS=[[1125,190,-7],[1172,456,6],[1118,716,-4],[560,800,8]]; // sin tapar los nombres de las zonas
+  $('scatter').innerHTML=shuffle([...PEOPLE]).slice(0,SPOTS.length).map((p,i)=>{ const [x,y,r]=SPOTS[i];
+    return `<div class="cand scard" style="left:${x/W*100}%;top:${y/H*100}%;--r:${r}deg;--i:${i};--bg:${bgOf(p)}">${cardTop(p)}`+
+      `<div class="frame"><i class="strip"></i><span class="pic">${portrait(p)}</span><i class="strip"></i></div>`+
+      `<span class="tel"><span>${esc(p.phone)}</span></span></div>`; }).join('');
 }
 // El menú: el corazón marca la opción; flechas para moverse, Enter para elegir
 const MENU=[...document.querySelectorAll('#menu .mi')];
