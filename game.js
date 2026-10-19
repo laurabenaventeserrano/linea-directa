@@ -203,10 +203,11 @@ const Sound = (()=>{
 /* ---------------- Session ---------------- */
 // G: la partida (quién está identificado). R: el caso actual (a quién buscas ahora).
 let G=null, R=null;
+const LIVES=3; // tres corazones: tres fallos y se acaba
 const left = () => PEOPLE.filter(p=>!G.blocked.includes(p.id));
 function newSession(){
   disarm();
-  G={ blocked:[], clues:0, calls:0, used:{}, over:false };
+  G={ blocked:[], clues:0, calls:0, used:{}, over:false, lives:LIVES };
   R=null;
   renderBoard();
 }
@@ -225,7 +226,7 @@ function newCase(){
   R={ target:target.id, queue:[...traits,...nots], given:[], crossed:new Set(), nope:new Set() };
 }
 function suspects(){ // quién encaja todavía con lo que sabes
-  return left().filter(p=>!R.nope.has(p.id)&&R.given.every(c=>c.not?p.id!==c.not:p.traits[c.cat]===c.val));
+  return left().filter(p=>!R.nope.has(p.id)&&R.given.every(c=>c.cat==='msg'||(c.not?p.id!==c.not:p.traits[c.cat]===c.val)));
 }
 function nextClue(){
   // salta las pistas que ya no sirven para distinguir a nadie
@@ -271,7 +272,7 @@ function updateBoard(){
     el.querySelector('.stamp').textContent=blocked?'BLOCKED':nope?'WRONG ONE':'';
     const pk=el.querySelector('.pick'), dl=el.querySelector('.dial'), bk=el.querySelector('.blk');
     const off=blocked||G.over, armedHere=armed===id&&!off;
-    pk.disabled=off; dl.disabled=off; bk.disabled=off;
+    pk.disabled=off; dl.disabled=off; bk.disabled=off||!!nope; // al que ya fallaste no se le vuelve a bloquear en este caso
     pk.setAttribute('aria-pressed',crossed?'true':'false');
     pk.setAttribute('aria-label',blocked?`${p.name}: blocked, ${p.reveal.archetype}`:`${crossed?'Bring back':'Cross out'} ${p.name}`);
     pk.dataset.tip=off?'':crossed?'BRING BACK':'CROSS OUT';
@@ -279,11 +280,11 @@ function updateBoard(){
     dl.querySelector('small').textContent=blocked?'NUMBER BLOCKED':'☎ CALL';
     bk.classList.toggle('armed',armedHere);
     bk.textContent=armedHere?'SURE? TAP AGAIN':'✕ BLOCK';
-    bk.dataset.tip=off?'':armedHere?'WRONG ONE = GAME OVER':`BLOCK ${p.name.toUpperCase()}`;
+    bk.dataset.tip=off||nope?'':armedHere?'WRONG ONE = −1 ♥':`BLOCK ${p.name.toUpperCase()}`;
   });
   $('hFound').textContent=`${G.blocked.length}/${PEOPLE.length}`;
   $('hMeter').innerHTML=I.meter(PEOPLE.length,G.blocked.length);
-  $('hLife').innerHTML=I.meter(1,G.over?0:1);
+  $('hLife').innerHTML=I.meter(LIVES,G.lives);
   nextStep();
   $('hClues').textContent=G.clues;
   $('hCalls').textContent=G.calls;
@@ -347,7 +348,7 @@ const personByNum=n=>PEOPLE.find(p=>digits(p.phone)===n);
 function nextStep(){ // qué hacer ahora, en una línea, debajo de la pantalla
   let t='';
   if(G&&R&&!G.over){
-    const open=left().filter(p=>!R.crossed.has(p.id)).length;
+    const open=left().filter(p=>!R.crossed.has(p.id)&&!R.nope.has(p.id)).length;
     if(L.mode==='incoming') t='▶ PICK UP THE PHONE';
     else if(L.mode==='ringing') t='RINGING…';
     else if(L.mode==='tone'&&L.dial) t=L.dial.length<numLen()?'▶ KEEP DIALLING':'▶ PRESS CALL';
@@ -461,13 +462,13 @@ function hotlineAnswers(first){
   if(!c){ say('HOTLINE',suspects().length<2?HOT.enough:HOT.empty); later(readyAgain,1800); return; }
   R.given.push(c); G.clues++;
   updateBoard(); Sound.clue();
-  say('HOTLINE · CLUE '+R.given.length,c.text,{tag:c.tag,cat:c.cat,clue:R.given.length-1});
+  say('HOTLINE · CLUE '+R.given.filter(x=>x.cat!=='msg').length,c.text,{tag:c.tag,cat:c.cat,clue:R.given.length-1});
   later(readyAgain,1600);
 }
 function talkTo(p){ // llamar a alguien: contesta con su frase. Para adivinar, se bloquea desde la carta.
   L.mode='talk'; P.screen(p.name.slice(0,8).toUpperCase()); crtState(`CONNECTED · ${p.name.toUpperCase()}`); setButtons();
   G.calls++;
-  say(p.name.toUpperCase(),p.hello);
+  say(p.name.toUpperCase(),pick(p.hellos));
   updateBoard();
   later(readyAgain,2600);
 }
@@ -477,7 +478,7 @@ function blockPerson(id){
   hangUp(true);
   if(id===R.target){
     G.blocked.push(id);
-    say(p.name.toUpperCase(),pick(DATA.caught));
+    say(p.name.toUpperCase(),p.caught||pick(DATA.caught));
     crtState('ADMIRER BLOCKED',true); P.screen('BLOCKED');
     Sound.stamp(); Sound.win(); updateBoard();
     const el=document.querySelector(`#board .cand[data-id="${id}"]`);
@@ -485,13 +486,32 @@ function blockPerson(id){
     later(()=>showReveal(p),1500);
     return;
   }
-  // bloquear al que no es: se acaba la partida
-  G.over=true; R.nope.add(id);
+  // bloquear al que no es: pierdes un corazón y quien te quiere sigue molestando
+  const t=byId(R.target);
+  G.lives--; R.nope.add(id);
   Sound.stamp(); Sound.no();
-  say('GAME OVER',`${p.name} didn’t even like you. You blocked the wrong person.`,{red:true});
-  crtState('GAME OVER',true); P.screen('GAME OVER');
+  if(G.lives<=0){
+    G.over=true;
+    say('GAME OVER',`${p.name} didn’t even like you. And you’re out of hearts.`,{red:true});
+    crtState('GAME OVER',true); P.screen('GAME OVER');
+    updateBoard();
+    later(()=>showLost(p,t),1600);
+    return;
+  }
+  say('WRONG ONE',`${p.name} didn’t even like you. ${G.lives} ${G.lives===1?'heart':'hearts'} left.`,{red:true});
+  crtState(`WRONG ONE · ${G.lives} ♥ LEFT`,true);
   updateBoard();
-  later(()=>showLost(p,byId(R.target)),1600);
+  later(()=>pester(t),1700);
+}
+function pester(t){ // el que te quiere no se ha enterado de nada y te vuelve a escribir. Su voz es otra pista.
+  if(!G||G.over||!R||R.target!==t.id) return;
+  const used=R.pestered=R.pestered||[];
+  const free=t.pester.filter(x=>!used.includes(x)); const msg=pick(free.length?free:t.pester); used.push(msg);
+  R.given.push({cat:'msg', text:msg, tag:'MSG'});
+  Sound.ring(); P.ring(true); P.screen('NEW MSG'); setTimeout(()=>{ if(L.mode!=='incoming') P.ring(false); },900);
+  say('UNKNOWN NUMBER',msg,{tag:'MSG',cat:'msg',clue:R.given.length-1});
+  crtState('THEY’RE STILL TEXTING',true);
+  later(()=>{ if(!L.offHook) crtState('ON HOOK'); },2600);
 }
 function startRinging(){
   L.mode='incoming'; P.ring(true); P.led('blink'); P.screen('RING!');
@@ -559,7 +579,7 @@ function showComplete(){
     <h2 id="mTitle">${esc(end.title)}</h2>
     <p>${esc(end.line)}</p>
     <div class="roll" aria-hidden="true">${PEOPLE.map(p=>`<span style="--bg:${bgOf(p)}">${portrait(p)}</span>`).join('')}</div>
-    <div class="score"><span>${PEOPLE.length}/${PEOPLE.length} BLOCKED</span><span>${G.clues} ${G.clues===1?'CLUE':'CLUES'}</span><span>${G.calls} ${G.calls===1?'CALL':'CALLS'}</span></div>
+    <div class="score"><span>${PEOPLE.length}/${PEOPLE.length} BLOCKED</span><span>${G.clues} ${G.clues===1?'CLUE':'CLUES'}</span><span>${G.calls} ${G.calls===1?'CALL':'CALLS'}</span><span>${G.lives}/${LIVES} ♥ LEFT</span></div>
     <button class="btn btn-big" data-go>▶ PLAY AGAIN</button>`,
     ()=>{ newSession(); beginCase(false); });
 }
@@ -570,8 +590,9 @@ function showLost(p,t){
       <div class="frame"><i class="strip"></i><span class="pic">${portrait(t)}</span><i class="strip"></i><span class="stamp">IT WAS ME</span></div>
       <span class="tel"><span>${esc(t.phone)}</span></span>
     </div>
-    <h2 id="mTitle">Wrong one blocked</h2>
-    <p>${esc(p.name)} didn’t even like you. It was ${esc(t.name)}: ${esc(t.reveal.archetype)}.</p>
+    <h2 id="mTitle">Out of hearts</h2>
+    <p>${esc(p.name)} didn’t even like you. It was ${esc(t.name)}: ${esc(t.reveal.archetype)}. And now they’ll never stop:</p>
+    <q>${esc(pick(t.pester))}</q>
     <div class="score"><span>${G.blocked.length}/${PEOPLE.length} BLOCKED</span><span>${G.clues} ${G.clues===1?'CLUE':'CLUES'}</span><span>${G.calls} ${G.calls===1?'CALL':'CALLS'}</span></div>
     <button class="btn btn-big" data-go>▶ PLAY AGAIN</button>`,
     ()=>{ newSession(); beginCase(false); });
@@ -584,7 +605,7 @@ function showHelp(){
       <li>Need more? Call the hotline again (${esc(HOT.label)}, or just press CALL).</li>
       <li>Every card shows how they text, how they make plans and what they talk about. Cross out whoever doesn’t fit.</li>
       <li>Call anyone in the lineup to hear them out. Tap their number.</li>
-      <li>Know who likes you? BLOCK them. Get it right and they’re gone for good. Block someone who doesn’t like you and it’s game over.</li>
+      <li>Know who likes you? BLOCK them. Get it right and they’re gone for good. Block someone who doesn’t like you and you lose a heart, and your admirer keeps texting you. You have three hearts.</li>
       <li>To hang up, press HANG UP or put the phone back on its base.</li>
       <li>Keys: 0–9 dial · Enter call · ← delete · Esc hang up.</li>
     </ol>

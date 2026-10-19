@@ -8,7 +8,9 @@
 // `hello`). When you know, you block them from their card: the right one is gone
 // for good, the wrong one ends the game. To add someone, copy a block:
 //   traits:  one value per trait (see TRAITS). No two people share a combination.
-//   hello:   what they say when you call them. Make it hint at their red flag.
+//   hellos:  what they say when you call them, in their own voice (one at random).
+//   pester:  what they send when you block the wrong person: they keep bothering you.
+//   caught:  what they say when you finally block them.
 //   pixels:  24×24 portrait. Each letter is a colour from `palette` (or from
 //            BASE_PALETTE in game.js); '.' is transparent and shows `bg`.
 //   reveal:  what the card shows once they're blocked.
@@ -86,7 +88,7 @@ window.LD_DATA = {
     empty:'That’s everything we have. Find them. Block them.',
     enough:'You know who likes you. Block them before they text.'
   },
-  // What the one who liked you says when you block them.
+  // Fallback if someone has no `caught` line.
   caught: [
     'Wait, you’re blocking me? I already named our dog.',
     'Blocked? Bold. I’ll just watch your stories, then.',
@@ -104,7 +106,10 @@ window.LD_DATA = {
     {
       id:'jordan', name:'Jordan', age:31, phone:'555-0101', bg:'#CFE6D4', pitch:.85,
       traits:{ texts:'slow', plans:'cancel', exes:'ex' },
-      hello:'…oh. Hey. I just saw your message. From Tuesday.',
+      // Vague, lowercase, trails off mid-sentence. Comes back like a zombie when you’re finally over it.
+      hellos:['…oh. Hey. I just saw your message. From Tuesday.', 'hey sorry, was gonna reply but then I', 'Oh, you called. Weird. I was literally just about to not answer.'],
+      pester:['hey stranger. remember me? lol', 'so are we not talking anymore? (2 months later)', 'sorry I vanished. anyway. u up?'],
+      caught:'Fine. I was going to disappear anyway.',
       reveal:{
         archetype:'The Ghoster', flag:'Vanishes mid-crush',
         quote:'I’m not really on my phone that much.',
@@ -144,7 +149,10 @@ window.LD_DATA = {
     {
       id:'ricky', name:'Ricky', age:34, phone:'555-0102', bg:'#F4CFC8', pitch:1.15,
       traits:{ texts:'double', plans:'soon', exes:'you' },
-      hello:'Hey you. I literally just thought about you. Isn’t that crazy?',
+      // Everything is the best thing that ever happened. Calls you babe on day two. Superlatives only.
+      hellos:['Hey you. I literally just thought about you. Isn’t that crazy?', 'Babe! Can I call you babe? I feel like I can.', 'I wrote you a song. It’s eleven minutes. Can I play it?'],
+      pester:['Good morning beautiful ♥ Good afternoon beautiful ♥ Good night beautiful ♥', 'I bought us matching keyrings. And a plant. Her name is Us.', 'Why aren’t you answering? Is it the song? I can make it shorter.'],
+      caught:'Blocked? After everything we’ve been through? This week?',
       reveal:{
         archetype:'The Love Bomber', flag:'Way too intense, way too soon',
         quote:'I’ve never felt this way before.',
@@ -188,7 +196,10 @@ window.LD_DATA = {
     {
       id:'sam', name:'Sam', age:28, phone:'555-0103', bg:'#EFE3CF', pitch:1.05,
       traits:{ texts:'double', plans:'never', exes:'you' },
-      hello:'Heyyy. What are we? Don’t answer that. Labels are for jam jars.',
+      // Chill, evasive, philosophical. Talks in vibes. Allergic to the word “we”.
+      hellos:['Heyyy. What are we? Don’t answer that. Labels are for jam jars.', 'Hey you. Or, like, hey… whatever we are.', 'Just vibing. Are we vibing? Let’s not decide.'],
+      pester:['miss our thing. whatever it is.', 'not a date, but are you free Saturday? also not a date.', 'we should talk. not about us though.'],
+      caught:'Blocked is a label too, you know.',
       reveal:{
         archetype:'The No Labels', flag:'Won’t say what you are',
         quote:'Why do we have to put a label on it?',
@@ -227,7 +238,10 @@ window.LD_DATA = {
     {
       id:'casey', name:'Casey', age:30, phone:'555-0104', bg:'#CFE6D4', pitch:1.2,
       traits:{ texts:'late', plans:'never', exes:'gym' },
-      hello:'Heyyy. Sorry, is it late? It’s not late. Are you up?',
+      // Nocturnal. Whispers. Only exists between midnight and 5 a.m.
+      hellos:['Heyyy. Sorry, is it late? It’s not late. Are you up?', 'Shh, I’m whispering. Everyone’s asleep. Except us.', 'Oh, it’s daytime? Weird. I don’t really do daytime.'],
+      pester:['(2:07 a.m.) u up?', '(3:14 a.m.) can’t sleep. thinking about u. and pizza.', '(4:01 a.m.) ok goodnight. or good morning. call me'],
+      caught:'Blocked? At this hour?',
       reveal:{
         archetype:'The 2 a.m. Caller', flag:'Only calls after midnight',
         quote:'You up?',
@@ -271,7 +285,10 @@ window.LD_DATA = {
     {
       id:'brad', name:'Brad', age:36, phone:'555-0105', bg:'#F4CFC8', pitch:.7,
       traits:{ texts:'double', plans:'never', exes:'gym' },
-      hello:'Yo. Can’t talk long, between sets. You lift?',
+      // Loud, all caps, says bro to everyone. Measures love in reps and protein.
+      hellos:['Yo. Can’t talk long, between sets. You lift?', 'BRO. Sorry. Babe. Bro-babe. You eating enough protein?', 'Calling from the gym. Where else.'],
+      pester:['Saw this and thought of u: [mirror selfie]', 'u up? I’m up. 5 a.m. leg day.', 'missing u like I miss carbs'],
+      caught:'Blocked. Respect. Strong move. Like a deadlift.',
       reveal:{
         archetype:'The Gym Bro', flag:'Only talks about the gym',
         quote:'Rest day? Never heard of her.',
@@ -310,7 +327,10 @@ window.LD_DATA = {
     {
       id:'robin', name:'Robin', age:33, phone:'555-0106', bg:'#EFE3CF', pitch:.9,
       traits:{ texts:'slow', plans:'never', exes:'ex' },
-      hello:'Hi. Look, I’m not ready for anything right now. Anyway, how are you?',
+      // Anxious, apologetic, quotes their therapist. Likes you. Not ready. Asks you out anyway.
+      hellos:['Hi. Look, I’m not ready for anything right now. Anyway, how are you?', 'My therapist says I should call people back. So. Hi.', 'I really like you. Which is why this is really bad timing.'],
+      pester:['I’m not ready. But are you free Friday?', 'I need space. Can you come over and give it to me?', 'Still not ready. Thinking of you though. Not ready, but thinking.'],
+      caught:'Honestly? I wasn’t ready for this either.',
       reveal:{
         archetype:'The Not Ready', flag:'Not ready for a relationship',
         quote:'I really like you, but I’m not in a place for this.',
@@ -349,7 +369,10 @@ window.LD_DATA = {
     {
       id:'taylor', name:'Taylor', age:27, phone:'555-0107', bg:'#F4CFC8', pitch:1.25,
       traits:{ texts:'late', plans:'cancel', exes:'you' },
-      hello:'Hey! Hold on, other line… Okay. Hi! Who’s this again?',
+      // Shifty, always in a hurry, always on the other line. Has rules about when you can text.
+      hellos:['Hey! Hold on, other line… Okay. Hi! Who’s this again?', 'Can’t talk, I’m at… my cousin’s. My cousin. Yeah.', 'Call me on this number, not the other one. Never the other one.'],
+      pester:['hey, don’t text after 9. or weekends. or holidays. xx', 'she’s away this weekend. I mean. My cousin’s away.', 'delete this message after you read it ♥'],
+      caught:'Wait. Does this mean you’re telling her?',
       reveal:{
         archetype:'The One With a Girlfriend', flag:'Already taken',
         quote:'It’s complicated. She doesn’t get me like you do.',
@@ -393,7 +416,10 @@ window.LD_DATA = {
     {
       id:'morgan', name:'Morgan', age:35, phone:'555-0108', bg:'#CFE6D4', pitch:1.1,
       traits:{ texts:'late', plans:'soon', exes:'you' },
-      hello:'Hi! Quick question: aisle or window? For Lisbon. In spring.',
+      // Over-organised romantic. Lives in a shared calendar. Has planned the next ten years after one coffee.
+      hellos:['Hi! Quick question: aisle or window? For Lisbon. In spring.', 'Spring or autumn wedding? Just for the spreadsheet.', 'I booked us a table. For our anniversary. In 2031.'],
+      pester:['I made us a shared calendar. You have 14 invites.', 'Our dog Biscuit says hi. We don’t have him yet.', 'Mum asked when you’re coming for Christmas. I said every year.'],
+      caught:'Okay, but I already paid the deposit.',
       reveal:{
         archetype:'The Too-Soon Planner', flag:'Plans the wedding on date one',
         quote:'We should go to Lisbon in spring. Just us.',
@@ -436,7 +462,10 @@ window.LD_DATA = {
     {
       id:'vicky', name:'Vicky', age:29, phone:'555-0109', bg:'#F4CFC8', pitch:1.15,
       traits:{ texts:'slow', plans:'never', exes:'you' },
-      hello:'Oh, hi! Loved your story. And the one before. And the one from 2019.',
+      // Silent watcher. Never texts, never leaves, sees everything. Speaks in notifications.
+      hellos:['Oh, hi! Loved your story. And the one before. And the one from 2019.', 'Hey. Nice haircut. The new one. From Tuesday.', 'I wasn’t looking at your profile. My thumb was.'],
+      pester:['(viewed your story)', '(liked your photo from 2017)', '(viewed your story) (viewed your story) (viewed your story)'],
+      caught:'That’s fine. I’ll watch from my other account.',
       reveal:{
         archetype:'The Orbiter', flag:'Watches everything, says nothing',
         quote:'Saw your story. Not that I was looking.',
@@ -479,7 +508,10 @@ window.LD_DATA = {
     {
       id:'mia', name:'Mia', age:26, phone:'555-0110', bg:'#CFE6D4', pitch:1.3,
       traits:{ texts:'slow', plans:'cancel', exes:'gym' },
-      hello:'Hiii! Sorry, just saw this. Eight hours later. As usual.',
+      // Cheerful, sorry, always eight hours late. Every reply comes with a delay.
+      hellos:['Hiii! Sorry, just saw this. Eight hours later. As usual.', 'Oh, you called! I’ll call you back. In about eight hours.', 'Hi! Sorry. What was the question? From this morning?'],
+      pester:['sorry just saw this!! (8 hours later)', 'haha (8 hours later)', 'yes!! wait, what was the question (8 hours later)'],
+      caught:'Blocked? I’ll reply to that in about eight hours.',
       reveal:{
         archetype:'The Paracetamol', flag:'Replies every 8 hours',
         quote:'Sorry, just saw this!',
@@ -522,7 +554,10 @@ window.LD_DATA = {
     {
       id:'nina', name:'Nina', age:32, phone:'555-0111', bg:'#EFE3CF', pitch:1.0,
       traits:{ texts:'double', plans:'never', exes:'ex' },
-      hello:'Oh. Hi. Sorry, I thought you were someone else. My ex has the same ringtone.',
+      // Every sentence finds its way back to the ex. Nostalgic, a bit sad, very specific.
+      hellos:['Oh. Hi. Sorry, I thought you were someone else. My ex has the same ringtone.', 'Funny, my ex used to call at exactly this time.', 'Hi! This is where my ex would say something cute.'],
+      pester:['you’d love my ex. you have the same jacket.', 'went to our café today. well. me and my ex’s café.', 'my ex just liked my story. anyway, how are you?'],
+      caught:'My ex blocked me too. You two would get on.',
       reveal:{
         archetype:'The Ex Talker', flag:'Only talks about their ex',
         quote:'Sorry, that’s just something my ex used to say.',
@@ -565,7 +600,10 @@ window.LD_DATA = {
     {
       id:'alex', name:'Alex', age:38, phone:'555-0112', bg:'#EFE3CF', pitch:.8,
       traits:{ texts:'late', plans:'cancel', exes:'ex' },
-      hello:'Hey. Can’t talk long. Text me, don’t call. Actually, don’t text either.',
+      // Secretive, has rules, says “my ex-wife” about the wife they live with. Always in the garage.
+      hellos:['Hey. Can’t talk long. Text me, don’t call. Actually, don’t text either.', 'I’m in the garage. Reception’s better. No other reason.', 'My ex-wife is in the next room. We’re very separated. By a wall.'],
+      pester:['Free Tuesday 2–3 p.m. only. Bring nothing. Tell no one.', 'If a woman answers, hang up. It’s my ex-wife. Who I live with.', 'Love you. Not you, sorry, wrong chat. Actually yes, you.'],
+      caught:'Fine. I’ll tell my ex-wife you said hi. Wait. No.',
       reveal:{
         archetype:'The Still Married', flag:'Married. Currently.',
         quote:'We’re basically separated. We just live together. And share a bank account.',
