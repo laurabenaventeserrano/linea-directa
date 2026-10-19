@@ -197,7 +197,7 @@ Para valores y funciones canónicas, ver «Paleta y trazos · referencia canóni
 
 Phone ink `#2A0F45` and phone yellow `#FFE14D` exist only inside `phone.js`, and as the outline of pixel portraits.
 
-**Page:** a blush background with a mint → blush → butter vertical gradient and a white 28px grid (`1.5px` lines at 75% white).
+**Page:** the board pattern on `--pink` (line swirls, lavender hearts, sky stars, 132px tile) on every screen. The old blush/mint/butter gradient and white grid were removed at Laura's request (19 Oct 2026, proposal branch).
 
 ## Type
 

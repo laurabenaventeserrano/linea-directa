@@ -45,13 +45,9 @@
   html{height:100%}
   body{
     min-height:100%;
-    background-color:var(--blush);
-    background-image:
-      linear-gradient(rgba(255,255,255,.75) 1.5px, transparent 1.5px),
-      linear-gradient(90deg, rgba(255,255,255,.75) 1.5px, transparent 1.5px),
-      linear-gradient(180deg, var(--mint) 0%, var(--blush) 45%, var(--butter) 100%);
-    background-size:28px 28px, 28px 28px, 100% 100%;
-    background-attachment:scroll, scroll, fixed;
+    /* el tablero del juego de mesa: rosa con espirales, corazones y estrellas */
+    background-color:var(--pink);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='132' height='132'%3E%3Cg stroke='%23A9507E' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M30 36c0-3 4-3 4 0 0 5-8 5-8 0 0-8 12-8 12 0 0 11-16 11-16 0 0-14 20-14 20 0' fill='none' opacity='.55'/%3E%3Cpath d='M96 30c-3-4-10-3-10 3 0 4 5 7 10 11 5-4 10-7 10-11 0-6-7-7-10-3z' fill='%23DCCBFF'/%3E%3Cpath d='M98 98l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z' fill='%23C9E2FF'/%3E%3Cpath d='M34 100c-2-3-7-2-7 2 0 3 3 5 7 8 4-3 7-5 7-8 0-4-5-5-7-2z' fill='none' opacity='.55'/%3E%3Cpath d='M64 70c0-2 3-2 3 0 0 4-6 4-6 0 0-6 9-6 9 0' fill='none' opacity='.4'/%3E%3C/g%3E%3C/svg%3E");
     color:var(--text);
     font-family:var(--px);
     cursor:var(--cur-arrow);
@@ -428,19 +424,16 @@
     transform:translate(-50%,-50%) scale(var(--s));
   }
   .staged #title{display:block;padding:0}
-  .staged .tb{
-    position:absolute;inset:18px 24px 24px 18px;width:auto;display:block;
-    background-color:var(--pink);
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cg fill='none' stroke='%23A9507E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' opacity='.45'%3E%3Cpath d='M20 26c-3-4-10-3-10 3 0 4 5 7 10 11 5-4 10-7 10-11 0-6-7-7-10-3z'/%3E%3Cpath d='M66 66c0-3 4-3 4 0 0 5-8 5-8 0 0-8 12-8 12 0 0 11-16 11-16 0 0-14 20-14 20 0'/%3E%3C/g%3E%3C/svg%3E");
-    border:3px solid var(--line);border-radius:28px;box-shadow:6px 6px 0 var(--line);overflow:hidden;
-  }
+  .staged .tb{position:absolute;inset:0;width:auto;display:block;overflow:hidden}
   .staged .tb .zones{display:block;position:absolute;inset:0;width:100%;height:100%}
   .staged .tb .zlabels,.staged .tb .ring,.staged .tb .scatter{display:block;position:absolute;inset:0}
   .zl{
     position:absolute;transform:translate(-50%,-50%) rotate(var(--r));white-space:nowrap;
-    font-size:13px;font-weight:700;color:var(--line);background:var(--zb);
-    border:3px solid var(--line);border-radius:6px;padding:5px 10px 4px;box-shadow:3px 3px 0 var(--line);
+    display:flex;align-items:center;gap:8px;
+    font-size:15px;font-weight:700;color:var(--line);background:var(--zb);
+    border:3px solid var(--line);border-radius:8px;padding:6px 14px 5px 8px;box-shadow:4px 4px 0 var(--line);
   }
+  .zl svg{width:30px;height:30px;flex:none}
   .tk{position:absolute;width:84px;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-50%) rotate(var(--r));animation:drop .5s cubic-bezier(.2,1.3,.4,1) both;animation-delay:calc(var(--i) * 45ms)}
   .tk .frame{border-width:3px;box-shadow:3px 3px 0 var(--line)}
   .tk b{position:relative;z-index:1;margin-top:-5px;font-size:9px;font-weight:700;color:var(--line);background:var(--sky);border:2px solid var(--line);border-radius:6px;padding:2px 7px 1px}
@@ -455,9 +448,18 @@
   .staged .sheet{
     position:absolute;left:50%;top:50%;z-index:4;width:500px;gap:12px;
     transform:translate(-50%,-50%) rotate(-1deg);
-    background:var(--cream);border:3px solid var(--line);border-radius:10px;
-    box-shadow:6px 6px 0 var(--shadow), 6px 6px 0 3px var(--line);padding:22px 26px 18px;
+    background-color:var(--cream);
+    background-image:repeating-linear-gradient(180deg, transparent 0 29px, var(--blush) 29px 31px);
+    border:3px solid var(--line);border-radius:10px;
+    box-shadow:6px 6px 0 var(--shadow), 6px 6px 0 3px var(--line);padding:28px 26px 18px;
   }
+  /* cinta adhesiva en las esquinas de la hoja */
+  .staged .sheet::before,.staged .sheet::after{
+    content:"";position:absolute;top:-14px;width:96px;height:28px;
+    background:var(--butter);border:3px solid var(--line);border-radius:4px;opacity:.92;
+  }
+  .staged .sheet::before{left:-26px;transform:rotate(-24deg)}
+  .staged .sheet::after{right:-26px;transform:rotate(22deg);background:var(--mint)}
   .staged .sheet .menu{box-shadow:4px 4px 0 var(--shadow)}
   .staged .layout{flex:1;min-height:0;grid-template-columns:340px 1fr;grid-template-rows:100%}
   .staged .col{min-height:0}
@@ -513,7 +515,7 @@
   <!-- La portada es el tablero del juego de mesa: zonas en el centro, las fichas de
        los chicos alrededor, el teléfono a un lado, cartas sueltas y la hoja en medio. -->
   <div class="tb">
-    <svg class="zones" id="zones" viewBox="0 0 1392 912" preserveAspectRatio="none" aria-hidden="true"></svg>
+    <svg class="zones" id="zones" viewBox="0 0 1440 960" preserveAspectRatio="none" aria-hidden="true"></svg>
     <div class="zlabels" id="zlabels" aria-hidden="true"></div>
     <div class="ring" id="ring" aria-hidden="true"></div>
     <div class="scatter" id="scatter" aria-hidden="true"></div>

@@ -659,35 +659,56 @@ let ringT=0;
 const titleRing=()=>{ Sound.ring(); ringT=setTimeout(titleRing,1300); };
 $('title').addEventListener('pointerdown',e=>{ if(!ringT&&!e.target.closest('#titleStage,.menu')){ Sound.unlock(); titleRing(); } },{once:true});
 
-// Portada: el tablero. Cuatro zonas en el centro, las fichas de todos alrededor
-// (como en el juego de mesa) y unas cuantas cartas sueltas encima.
+// Portada: el tablero. Un camino crema con casillas de corazón donde están las fichas
+// de todos, cuatro zonas con su textura y su icono dentro, y cartas sueltas encima.
 {
-  const W=1392, H=912, cx=W/2, cy=H/2;
-  const ZONES=[['THE CAFÉ','var(--mint)','var(--butter)'],['THE GYM','var(--sky)','var(--pink)'],
-               ['THE PARK','var(--butter)','var(--mint)'],['THE DISCO','var(--lav)','var(--butter)']];
-  const zr={x:520,y:340};
-  const pt=(deg,f=1)=>{ const a=deg*Math.PI/180; return [cx+zr.x*f*Math.cos(a), cy+zr.y*f*Math.sin(a)]; };
-  let svg='';
-  ZONES.forEach(([,fill],i)=>{ // cada zona es una porción de la elipse
-    const a0=i*90, a1=a0+90; let d=`M${cx} ${cy}`;
-    for(let k=0;k<=18;k++){ const [x,y]=pt(a0+(a1-a0)*k/18); d+=` L${x.toFixed(1)} ${y.toFixed(1)}`; }
-    svg+=`<path d="${d} Z" fill="${fill}" stroke="#A9507E" stroke-width="3" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
+  const W=1440, H=960, cx=W/2, cy=H/2, L='#A9507E';
+  const ell=(rx,ry,deg,f=1)=>{ const a=deg*Math.PI/180; return [cx+rx*f*Math.cos(a), cy+ry*f*Math.sin(a)]; };
+  const ICON={ // iconos de las zonas, con el trazo del juego
+    cafe:`<svg viewBox="0 0 30 30"><path d="M6 12h14v7a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6z" fill="#FFFBF4" stroke="${L}" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 14h2a3 3 0 0 1 0 6h-2" fill="none" stroke="${L}" stroke-width="2.5"/><path d="M10 4c-2 2 2 3 0 6M15 4c-2 2 2 3 0 6" fill="none" stroke="${L}" stroke-width="2" stroke-linecap="round"/></svg>`,
+    gym:`<svg viewBox="0 0 30 30"><rect x="3" y="9" width="5" height="12" rx="1.5" fill="#FF7FA3" stroke="${L}" stroke-width="2.5"/><rect x="22" y="9" width="5" height="12" rx="1.5" fill="#FF7FA3" stroke="${L}" stroke-width="2.5"/><path d="M8 15h14" stroke="${L}" stroke-width="3"/></svg>`,
+    park:`<svg viewBox="0 0 30 30"><circle cx="15" cy="12" r="8" fill="#8ADB93" stroke="${L}" stroke-width="2.5"/><path d="M15 20v7" stroke="${L}" stroke-width="3" stroke-linecap="round"/></svg>`,
+    disco:`<svg viewBox="0 0 30 30"><path d="M15 2v5" stroke="${L}" stroke-width="2"/><circle cx="15" cy="17" r="10" fill="#DCCBFF" stroke="${L}" stroke-width="2.5"/><path d="M5 17h20M15 7v20M8 11h14M8 23h14" stroke="${L}" stroke-width="1.5"/></svg>`
+  };
+  const ZONES=[ // nombre, color, textura, color de la cinta, icono
+    ['THE CAFÉ','#C3F0DF','pDots','#FFF0B3','cafe'],['THE GYM','#C9E2FF','pStripes','#FFB3D1','gym'],
+    ['THE PARK','#FFF0B3','pChecks','#C3F0DF','park'],['THE DISCO','#DCCBFF','pHearts','#FFF0B3','disco']];
+  const Z={x:580,y:380}, T={x:630,y:412}; // zonas · camino de las fichas
+  let svg=`<defs>
+    <pattern id="pDots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="2.4" fill="${L}" opacity=".22"/><circle cx="15" cy="15" r="2.4" fill="${L}" opacity=".22"/></pattern>
+    <pattern id="pStripes" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="18" fill="${L}" opacity=".12"/></pattern>
+    <pattern id="pChecks" width="28" height="28" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#FFFBF4" opacity=".6"/><rect x="14" y="14" width="14" height="14" fill="#FFFBF4" opacity=".6"/></pattern>
+    <pattern id="pHearts" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M10 12c-2-3-6-2-6 1.5 0 2.5 3 4.5 6 7 3-2.5 6-4.5 6-7 0-3.5-4-4.5-6-1.5z" fill="${L}" opacity=".2"/></pattern>
+  </defs>`;
+  // el camino: una banda crema con borde y una línea discontinua
+  svg+=`<ellipse cx="${cx}" cy="${cy}" rx="${T.x+52}" ry="${T.y+46}" fill="#FFFBF4" stroke="${L}" stroke-width="3"/>`+
+       `<ellipse cx="${cx}" cy="${cy}" rx="${T.x}" ry="${T.y}" fill="none" stroke="${L}" stroke-width="2.5" stroke-dasharray="4 12" stroke-linecap="round" opacity=".55"/>`+
+       `<ellipse cx="${cx}" cy="${cy}" rx="${T.x-52}" ry="${T.y-46}" fill="#FFD1E4" stroke="${L}" stroke-width="3"/>`;
+  ZONES.forEach(([,fill,pat],i)=>{
+    const a0=i*90+45, a1=a0+90; let d=`M${cx} ${cy}`;
+    for(let k=0;k<=18;k++){ const [x,y]=ell(Z.x-60,Z.y-44,a0+(a1-a0)*k/18); d+=` L${x.toFixed(1)} ${y.toFixed(1)}`; }
+    svg+=`<path d="${d} Z" fill="${fill}" stroke="${L}" stroke-width="3" stroke-linejoin="round"/><path d="${d} Z" fill="url(#${pat})"/>`;
   });
+  // casillas de corazón entre ficha y ficha
+  const HP='M0 -3c-3-4-9-3-9 2 0 4 5 7 9 10 4-3 9-6 9-10 0-5-6-6-9-2z';
+  for(let i=0;i<PEOPLE.length;i++){ const [x,y]=ell(T.x,T.y,90+(i+.5)*360/PEOPLE.length);
+    svg+=`<path d="${HP}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(1.4)" fill="${['#FF7FA3','#DCCBFF','#FFF0B3'][i%3]}" stroke="${L}" stroke-width="1.8" stroke-linejoin="round"/>`; }
   $('zones').innerHTML=svg;
-  $('zlabels').innerHTML=ZONES.map(([t,,bg],i)=>{ const [x,y]=pt(i*90+45,.86);
-    return `<span class="zl" style="left:${x/W*100}%;top:${y/H*100}%;--r:${[-6,5,-4,7][i]}deg;--zb:${bg}">${t}</span>`; }).join('');
-  // las fichas: en un óvalo alrededor de las zonas, mirando hacia fuera pero legibles
-  const rr={x:612,y:388};
+  // las cintas con el nombre de cada zona (a medio camino entre la hoja y el camino)
+  $('zlabels').innerHTML=ZONES.map(([t,,,bg,ic],i)=>{ const [x,y]=ell(Z.x-60,Z.y-44,i*90+90,.72);
+    const pos=[[0,58],[15,130],[0,-58],[-15,-140]][i]; // fuera del teléfono y de las cartas
+    return `<span class="zl" style="left:${(x+pos[0])/W*100}%;top:${(y+pos[1])/H*100}%;--r:${[-3,-8,4,7][i]}deg;--zb:${bg}">${ICON[ic]}${t}</span>`; }).join('');
+  // las fichas sobre el camino, mirando hacia fuera pero legibles
   $('ring').innerHTML=PEOPLE.map((p,i)=>{
     const deg=90+i*360/PEOPLE.length, a=deg*Math.PI/180;
-    const x=cx+rr.x*Math.cos(a), y=cy+rr.y*Math.sin(a);
-    let r=Math.atan2(Math.sin(a)/rr.y,Math.cos(a)/rr.x)*180/Math.PI-90;
+    const [x,y]=ell(T.x,T.y,deg);
+    let r=Math.atan2(Math.sin(a)/T.y,Math.cos(a)/T.x)*180/Math.PI-90;
     if(r<-180) r+=360; if(r>90) r-=180; if(r<-90) r+=180;
     return `<div class="tk" style="left:${x/W*100}%;top:${y/H*100}%;--r:${(r*.35).toFixed(1)}deg;--i:${i};--bg:${bgOf(p)}">`+
       `<div class="frame"><i class="strip"></i><span class="pic">${portrait(p)}</span><i class="strip"></i></div><b>${esc(p.name.toUpperCase())}</b></div>`;
   }).join('');
   // cartas sueltas sobre el tablero, como si alguien las hubiera dejado ahí
-  const SPOTS=[[1125,190,-7],[1172,456,6],[1118,716,-4],[560,800,8]]; // sin tapar los nombres de las zonas
+  const SPOTS=[[1190,480,6],[880,96,-6],[560,866,7],[1196,836,-5],[262,846,-9]];
   $('scatter').innerHTML=shuffle([...PEOPLE]).slice(0,SPOTS.length).map((p,i)=>{ const [x,y,r]=SPOTS[i];
     return `<div class="cand scard" style="left:${x/W*100}%;top:${y/H*100}%;--r:${r}deg;--i:${i};--bg:${bgOf(p)}">${cardTop(p)}`+
       `<div class="frame"><i class="strip"></i><span class="pic">${portrait(p)}</span><i class="strip"></i></div>`+
