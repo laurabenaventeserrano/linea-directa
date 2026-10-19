@@ -37,20 +37,20 @@ window.LD_DATA = {
         'They call you at 2 a.m. and act surprised you were asleep.'
       ],
       slow: [
-        'Your admirer replies like paracetamol: one every eight hours.',
+        'Your admirer replies once every eight hours. Like clockwork. Slow clockwork.',
         'They answer your message from Monday on Thursday. With “haha”.',
         'They watch your story in four seconds. They answer your text in four days.'
       ]
     },
     plans: {
       soon: [
-        'The one who likes you has already named your future dog. You’ve met twice.',
-        'They brought up a trip to Lisbon together. On the first date.',
+        'The one who likes you said “I love you” on the second date. During the starters.',
+        'They’ve already picked a name for your kids. You’ve met twice.',
         'They want you to meet their mum. This Sunday. You met on Tuesday.'
       ],
       never: [
         'Ask them what you are and you get “let’s see where it goes”.',
-        'They’re “not ready for anything serious right now”. They’ve said it for three years.',
+        'They’ll “see how they feel” about Saturday. On Saturday.',
         'Their idea of a plan is “we’ll see”. They never see.'
       ],
       cancel: [
@@ -82,8 +82,7 @@ window.LD_DATA = {
   hotline: {
     number:'555-3524', label:'555-FLAG',
     ring:'Línea Directa. Someone in your lineup likes you. Sorry. Here’s what we know.',
-    again:'Hotline again. More on your admirer, coming up.',
-    not:'And one more thing: it’s not {name}. They don’t even know you exist.',
+    not:'And one more thing: it’s not {name}. Not this time, anyway.',
     empty:'That’s everything we have. Find them. Block them.',
     enough:'You know who likes you. Block them before they text.'
   },
@@ -96,15 +95,15 @@ window.LD_DATA = {
   ],
   // Completion screen, chosen by how many clues and calls it took.
   ending: [
-    { max:20, title:'Certified heart blocker', line:'Twelve admirers, twelve blocks. Your therapist would be proud. Now delete the apps.' },
-    { max:30, title:'Mostly survived', line:'You blocked them all. A few too many calls, but honestly that’s just dating.' },
+    { max:24, title:'Certified heart blocker', line:'Twelve admirers, twelve blocks. Your therapist would be proud. Now delete the apps.' },
+    { max:34, title:'Mostly survived', line:'You blocked them all. A few too many calls, but honestly that’s just dating.' },
     { max:999, title:'You would have dated all of them', line:'You blocked every admirer eventually. Mostly by calling them. Please never do this in real life.' }
   ],
 
   candidates: [
     {
       id:'jordan', name:'Jordan', age:31, phone:'555-0101', bg:'#CFE6D4', pitch:.85,
-      traits:{ texts:'slow', plans:'cancel', exes:'you' },
+      traits:{ texts:'slow', plans:'cancel', exes:'ex' },
       hello:'…oh. Hey. I just saw your message. From Tuesday.',
       reveal:{
         archetype:'The Ghoster', flag:'Vanishes mid-crush',
@@ -188,7 +187,7 @@ window.LD_DATA = {
     },
     {
       id:'sam', name:'Sam', age:28, phone:'555-0103', bg:'#EFE3CF', pitch:1.05,
-      traits:{ texts:'late', plans:'never', exes:'gym' },
+      traits:{ texts:'double', plans:'never', exes:'you' },
       hello:'Heyyy. What are we? Don’t answer that. Labels are for jam jars.',
       reveal:{
         archetype:'The No Labels', flag:'Won’t say what you are',
@@ -227,7 +226,7 @@ window.LD_DATA = {
     },
     {
       id:'casey', name:'Casey', age:30, phone:'555-0104', bg:'#CFE6D4', pitch:1.2,
-      traits:{ texts:'late', plans:'cancel', exes:'you' },
+      traits:{ texts:'late', plans:'never', exes:'gym' },
       hello:'Heyyy. Sorry, is it late? It’s not late. Are you up?',
       reveal:{
         archetype:'The 2 a.m. Caller', flag:'Only calls after midnight',
@@ -349,7 +348,7 @@ window.LD_DATA = {
     },
     {
       id:'taylor', name:'Taylor', age:27, phone:'555-0107', bg:'#F4CFC8', pitch:1.25,
-      traits:{ texts:'double', plans:'cancel', exes:'gym' },
+      traits:{ texts:'late', plans:'cancel', exes:'you' },
       hello:'Hey! Hold on, other line… Okay. Hi! Who’s this again?',
       reveal:{
         archetype:'The One With a Girlfriend', flag:'Already taken',
@@ -479,7 +478,7 @@ window.LD_DATA = {
     },
     {
       id:'mia', name:'Mia', age:26, phone:'555-0110', bg:'#CFE6D4', pitch:1.3,
-      traits:{ texts:'slow', plans:'soon', exes:'gym' },
+      traits:{ texts:'slow', plans:'cancel', exes:'gym' },
       hello:'Hiii! Sorry, just saw this. Eight hours later. As usual.',
       reveal:{
         archetype:'The Paracetamol', flag:'Replies every 8 hours',

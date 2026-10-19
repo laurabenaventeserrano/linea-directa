@@ -496,7 +496,7 @@ function blockPerson(id){
 function startRinging(){
   L.mode='incoming'; P.ring(true); P.led('blink'); P.screen('RING!');
   crtState('INCOMING CALL',true); setButtons();
-  say('INCOMING CALL','Someone else in the lineup likes you. Pick up.');
+  say('INCOMING CALL',HOT.ring); // la línea directa dice el objetivo al llamar
   const ringOnce=()=>{ if(L.mode!=='incoming') return; Sound.ring(); later(ringOnce,1300); };
   ringOnce();
 }
