@@ -332,7 +332,7 @@ function renderHistory(){
   h.scrollTop=1e6;
 }
 function crtState(t,red){ const s=$('crtState'); s.textContent=t; s.classList.toggle('red',!!red); }
-function crtCase(){ $('hCase').textContent=`CASE ${String(G.blocked.length+1).padStart(2,'0')}/${String(PEOPLE.length).padStart(2,'0')}`; }
+function crtCase(){} // el marcador ya no enseña el número de caso
 function glitch(){ const s=$('screen'); s.classList.remove('glitch'); void s.offsetWidth; s.classList.add('glitch'); }
 
 /* ---------------- The line ---------------- */
