@@ -659,30 +659,6 @@ let ringT=0;
 const titleRing=()=>{ Sound.ring(); ringT=setTimeout(titleRing,1300); };
 $('title').addEventListener('pointerdown',e=>{ if(!ringT&&!e.target.closest('#titleStage,.menu')){ Sound.unlock(); titleRing(); } },{once:true});
 
-// Portada: el tablero, limpio. Un camino crema con las fichas de todos y
-// cuatro zonas de color lisas en el centro.
-{
-  const W=1440, H=960, cx=W/2, cy=H/2, L='#A9507E';
-  const ell=(rx,ry,deg)=>{ const a=deg*Math.PI/180; return [cx+rx*Math.cos(a), cy+ry*Math.sin(a)]; };
-  const T={x:630,y:412}; // el camino de las fichas
-  let svg=`<ellipse cx="${cx}" cy="${cy}" rx="${T.x+52}" ry="${T.y+46}" fill="#FFFBF4" stroke="${L}" stroke-width="3"/>`+
-          `<ellipse cx="${cx}" cy="${cy}" rx="${T.x-52}" ry="${T.y-46}" fill="#FFD1E4" stroke="${L}" stroke-width="3"/>`;
-  ['#C3F0DF','#C9E2FF','#FFF0B3','#DCCBFF'].forEach((fill,i)=>{ // las zonas: porciones lisas
-    const a0=i*90+45, a1=a0+90; let d=`M${cx} ${cy}`;
-    for(let k=0;k<=18;k++){ const [x,y]=ell(T.x-112,T.y-90,a0+(a1-a0)*k/18); d+=` L${x.toFixed(1)} ${y.toFixed(1)}`; }
-    svg+=`<path d="${d} Z" fill="${fill}" stroke="${L}" stroke-width="3" stroke-linejoin="round"/>`;
-  });
-  $('zones').innerHTML=svg;
-  // las fichas sobre el camino, mirando hacia fuera pero legibles
-  $('ring').innerHTML=PEOPLE.map((p,i)=>{
-    const deg=90+i*360/PEOPLE.length, a=deg*Math.PI/180;
-    const [x,y]=ell(T.x,T.y,deg);
-    let r=Math.atan2(Math.sin(a)/T.y,Math.cos(a)/T.x)*180/Math.PI-90;
-    if(r<-180) r+=360; if(r>90) r-=180; if(r<-90) r+=180;
-    return `<div class="tk" style="left:${x/W*100}%;top:${y/H*100}%;--r:${(r*.35).toFixed(1)}deg;--i:${i};--bg:${bgOf(p)}">`+
-      `<div class="frame"><i class="strip"></i><span class="pic">${portrait(p)}</span><i class="strip"></i></div></div>`;
-  }).join('');
-}
 // El menú: el corazón marca la opción; flechas para moverse, Enter para elegir
 const MENU=[...document.querySelectorAll('#menu .mi')];
 let menuSel=0;
